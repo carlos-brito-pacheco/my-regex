@@ -29,7 +29,7 @@ template  <class T>
 int PearsonHashtable<T>::hashfunc(string key) {
 
     /* Hashing is done using Pearson Hashing function.
-     * 
+     *
      *
      *
      */

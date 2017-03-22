@@ -19,6 +19,8 @@ private:
 
     ostream& operator<<(ostream& os);
 
+    bool isoperator(char op);
+
 };
 
 
