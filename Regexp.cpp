@@ -1,16 +1,75 @@
+//<editor-fold desc="License">
 /*
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/17/17.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  Copyright (C) 3/22/17 Carlos Brito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.*
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
+//</editor-fold>
+
+//<editor-fold desc="Description">
+/*
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Author: Carlos Brito (carlos.brito524@gmail.com)
+ * Date: 3/22/17.
+ *
+ * Description:
+ * This is the implementation of the class Regexp.
+ *
+ * TODO:
+ * Handle tokens as something else than chars
+ *
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ */
+//</editor-fold>
 
 #include <stack>
 #include <queue>
 #include <cctype>
 #include "Regexp.h"
+#include "PearsonHashtable8.h"
 
 
-ostream &Regexp::operator<<(ostream &os) {
-    return os << regexp_;
+// Static variable initialization
+static RegexpPostfixOperator REGEXP_KLEENE("Kleene Star", '*', 1, true);
+static RegexpInfixOperator REGEXP_CONCAT("Concatenation", '&', true, 2);
+static RegexpInfixOperator REGEXP_ALTERN("Alternation", '|', true, 3);
+
+PearsonHashtable8<RegexpOperator> getOperatorTable() {
+    PearsonHashtable8<RegexpOperator> table;
+
+    table.add(""+REGEXP_KLEENE.op(), REGEXP_KLEENE);
+    table.add(""+REGEXP_CONCAT.op(), REGEXP_CONCAT);
+    table.add(""+REGEXP_ALTERN.op(), REGEXP_ALTERN);
+
+    return table;
+}
+
+Hashtable<RegexpOperator> *Regexp::operator_table_ = new PearsonHashtable8<RegexpOperator>( getOperatorTable() );
+
+
+
+// - - - - - - - - - CLASS METHODS - - - - - - - - - //
+
+Regexp::Regexp(string regexp)
+        : regexp_(regexp) {
+
+}
+
+ostream& operator<<(ostream &os, Regexp const& obj) {
+    return os << obj.regexp_;
 }
 
 // -------------------------
@@ -22,7 +81,6 @@ string Regexp::toPostfix() {
      * You can consult a nice explanation here:
      * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
      */
-
     queue<char> output_queue;
     stack<char> operator_stack;
 
@@ -36,7 +94,10 @@ string Regexp::toPostfix() {
         }
         if ( isoperator(token) )
         {
+            while( isoperator( operator_stack.top() ) )
+            {
 
+            }
         }
 
     }
@@ -47,18 +108,7 @@ string Regexp::toPostfix() {
 // ---------------------
 // returns true if operator, otherwise false
 bool Regexp::isoperator(char op) {
-    switch (op)
-    {
-        case '+':
-            return true;
-        case '*':
-            return true;
-        case '?':
-            return true;
-        default:
-            return false;
-
-
-    }
-    return false;
+    return operator_table_->containsKey(""+op);
 }
+
+
