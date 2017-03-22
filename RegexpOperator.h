@@ -49,7 +49,7 @@ public:
 
     const int precedence();
     const string name();
-    const char op();
+    const char c_op();
 
     bool operator<(RegexpOperator const& rhs);
     bool operator>(RegexpOperator const& rhs);

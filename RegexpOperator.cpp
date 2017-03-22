@@ -20,7 +20,7 @@ const string RegexpOperator::name() {
     return name_;
 }
 
-const char RegexpOperator::op() {
+const char RegexpOperator::c_op() {
     return op_;
 }
 
