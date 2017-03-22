@@ -19,18 +19,45 @@
 
 //<editor-fold desc="Description">
 /*
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Author: Carlos Brito (carlos.brito524@gmail.com)
-* Date: 3/22/17.
-*
-* Description:
-*
-*
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Author: Carlos Brito (carlos.brito524@gmail.com)
+ * Date: 3/22/17.
+ *
+ * Description:
+ *
+ * TODO:
+ *
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 //</editor-fold>
 
 #ifndef MYREGEX_HASHTABLEERRORS_H
 #define MYREGEX_HASHTABLEERRORS_H
+
+#include <exception>
+#include <string>
+using namespace std;
+
+class KeyNotFoundError : public exception {
+
+    const string key_;
+    string message_;
+
+public:
+    KeyNotFoundError(string key)
+            : key_(key) {
+        message_ = "Requested entry with key: [ " + key_ + " ]could not be found";
+    }
+
+    ~KeyNotFoundError() throw(){
+
+    }
+
+    virtual const char *what() const throw() {
+
+        return message_.c_str();
+    }
+};
 
 #endif //MYREGEX_HASHTABLEERRORS_H
