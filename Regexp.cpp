@@ -27,8 +27,12 @@
  * This is the implementation of the class Regexp.
  *
  * TODO:
- * Handle tokens as something else than chars
+ * - Handle tokens as something else than chars
  *
+ * - Instead of using the Shunting-Yard algorithm,
+ * we should probably use a parser and determine if
+ * the regular expression is syntactically valid and
+ * convert to postfix during parsing
  *
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -39,26 +43,30 @@
 #include <queue>
 #include <cctype>
 #include "Regexp.h"
+#include "RegexpErrors.h"
 #include "PearsonHashtable8.h"
 
 
 // Static variable initialization
-static RegexpPostfixOperator REGEXP_KLEENE("Kleene Star", '*', 1, true);
-static RegexpInfixOperator REGEXP_CONCAT("Concatenation", '&', true, 2);
-static RegexpInfixOperator REGEXP_ALTERN("Alternation", '|', true, 3);
+static RegexpOperator REGEXP_KLEENE("Kleene Star", '*', 1);
+static RegexpOperator REGEXP_CONCAT("Concatenation", '&', 2);
+static RegexpOperator REGEXP_ALTERN("Alternation", '|', 3);
+static RegexpOperator REGEXP_LPAREN("Left Parentheses", '(', 0); // parentheses can be regarded as "grouping" operators
+static RegexpOperator REGEXP_RPAREN("Right Parentheses", ')', 0); // therefore we don't break cohesion
 
 PearsonHashtable8<RegexpOperator> getOperatorTable() {
     PearsonHashtable8<RegexpOperator> table;
 
-    table.add(""+REGEXP_KLEENE.op(), REGEXP_KLEENE);
-    table.add(""+REGEXP_CONCAT.op(), REGEXP_CONCAT);
-    table.add(""+REGEXP_ALTERN.op(), REGEXP_ALTERN);
+    table.add(""+ REGEXP_KLEENE.c_op(), REGEXP_KLEENE);
+    table.add(""+ REGEXP_CONCAT.c_op(), REGEXP_CONCAT);
+    table.add(""+ REGEXP_ALTERN.c_op(), REGEXP_ALTERN);
+    table.add(""+ REGEXP_LPAREN.c_op(), REGEXP_LPAREN);
+    table.add(""+ REGEXP_RPAREN.c_op(), REGEXP_RPAREN);
 
     return table;
 }
 
-Hashtable<RegexpOperator> *Regexp::operator_table_ = new PearsonHashtable8<RegexpOperator>( getOperatorTable() );
-
+Hashtable<RegexpOperator> *Regexp::operator_set_ = new PearsonHashtable8<RegexpOperator>( getOperatorTable() );
 
 
 // - - - - - - - - - CLASS METHODS - - - - - - - - - //
@@ -82,33 +90,101 @@ string Regexp::toPostfix() {
      * https://en.wikipedia.org/wiki/Shunting-yard_algorithm
      */
     queue<char> output_queue;
-    stack<char> operator_stack;
+    stack<RegexpOperator> operator_stack;
 
     const string infix_string = regexp_;
     for (string::iterator it = regexp_.begin(); it != regexp_.end(); it++)
     {
-        char token;
-        if ( isalnum(token) ) // if token is alphanumeric then push to queue
+        char token = *it;
+        if ( isalnum(token) )
+            // if token is alphanumeric then push to queue
         {
             output_queue.push(token);
         }
-        if ( isoperator(token) )
+        if ( token != '(' && token != ')' && isoperator(token) )
+            // if token is operator then....
         {
-            while( isoperator( operator_stack.top() ) )
+            RegexpOperator op1 = operator_set_->get(""+token); // get operator from token
+            while ( !operator_stack.empty() && operator_stack.top().c_op() != '(' )
             {
-
+                RegexpOperator op2 = operator_stack.top(); // get operator from stack
+                if (op1 <= op2)
+                    // if op1 has less precedence than op2 then push to queue and pop from stack
+                {
+                    output_queue.push( op2.c_op() );
+                    operator_stack.pop();
+                } else {
+                    break;
+                }
             }
+                operator_stack.push(op1); // at the end push op1 to stack
         }
 
+        if (token == '(')
+            // if token is left paren then push to stack
+        {
+            RegexpOperator lparen = operator_set_->get(""+'(');
+            operator_stack.push(lparen);
+        }
+
+        if (token == ')')
+            // if token is right paren then...
+        {
+            while(true)
+                // Until the token at the top of the stack is a left parenthesis,
+                // pop operators off the stack onto the output queue.
+            {
+                if (operator_stack.top().c_op() != '(')
+                {
+                    output_queue.push( operator_stack.top().c_op() );
+                    operator_stack.pop();
+
+                    if(operator_stack.empty())
+                    {
+                        throw RegexpMismatchedParentheses(regexp_); // parentheses mismatch
+                    }
+                } else {
+                    operator_stack.pop(); // pop left paren
+                    break;
+                }
+            }
+        }
+    } // no more tokens to read here
+
+    while ( !operator_stack.empty() )
+        // While there are still operator tokens in the stack
+    {
+        if ( operator_stack.top().c_op() == '(' )
+            // If the operator token on the top of the stack is a parenthesis,
+            // then there are mismatched parentheses.
+        {
+            throw RegexpMismatchedParentheses(regexp_);
+        } else
+            // Pop the operator onto the output queue.
+        {
+            output_queue.push( operator_stack.top().c_op() );
+            operator_stack.pop();
+        }
     }
 
-    return std::__cxx11::string();
+    string postfix_expresion = "";
+    while (!output_queue.empty())
+    {
+        postfix_expresion += output_queue.front();
+        output_queue.pop();
+    }
+
+    return postfix_expresion;
 }
 
 // ---------------------
 // returns true if operator, otherwise false
 bool Regexp::isoperator(char op) {
-    return operator_table_->containsKey(""+op);
+    return operator_set_->containsKey(""+op);
+}
+
+string Regexp::regexp() {
+    return regexp_;
 }
 
 

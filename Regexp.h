@@ -50,16 +50,15 @@
 using namespace std;
 
 class Regexp {
-public:
-    static Hashtable<RegexpOperator> *operator_table_;
+    static Hashtable<RegexpOperator> *operator_set_;
     string regexp_;
     string postfix_;
 
-
-private:
+public:
     Regexp(string regexp);
     string toPostfix();
-
+    string regexp();
+private:
     bool isoperator(char op);
 
     friend ostream& operator<<(ostream& os, Regexp const& regexp);
