@@ -24,10 +24,14 @@
  * Date: 3/22/17.
  *
  * Description:
+ * This is a template class that manipulates "Token" types
+ * during parsing. An object of type Token stores the lexeme
+ * and has an attribute tag to indicate which "class" the token
+ * belongs to. A representation could be this:
+ *
+ * Token<TokenTag> token(relop, "<=");
  *
  * TODO:
- *
- *
  *
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
