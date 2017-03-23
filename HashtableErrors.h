@@ -47,7 +47,7 @@ class KeyNotFoundError : public exception {
 public:
     KeyNotFoundError(string key)
             : key_(key) {
-        message_ = "Requested entry with key: [ " + key_ + " ]could not be found";
+        message_ = "Requested entry with key: \"" + key_ + "\" could not be found";
     }
 
     ~KeyNotFoundError() throw(){
