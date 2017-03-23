@@ -25,24 +25,29 @@ const char RegexpOperator::c_op() {
 }
 
 bool RegexpOperator::operator<(RegexpOperator const& rhs) {
-    return this->precedence_ < rhs.precedence_;
-}
-
-bool RegexpOperator::operator>(RegexpOperator const &rhs) {
     return this->precedence_ > rhs.precedence_;
 }
 
+bool RegexpOperator::operator>(RegexpOperator const &rhs) {
+    return this->precedence_ < rhs.precedence_;
+}
+
+bool RegexpOperator::operator==(RegexpOperator const &rhs) {
+    return this->precedence_ == rhs.precedence_;
+}
+
 bool RegexpOperator::operator>=(RegexpOperator const &rhs) {
-    return this->precedence_ >= rhs.precedence_;
+    return *this > rhs || *this == rhs;
 }
 
 bool RegexpOperator::operator<=(RegexpOperator const &rhs) {
-    return this->precedence_ <= rhs.precedence_;
+    return *this < rhs || *this == rhs;
 }
 
 ostream& operator<<(ostream& os,  RegexpOperator const& obj) {
     return os << "RegexOperator( "<< obj.name_ << ", " << obj.op_ << " )";
 }
+
 
 RegexpInfixOperator::RegexpInfixOperator(string name, char op, bool left_assoc, int precedence)
         : RegexpOperator(name, op, precedence),

@@ -53,6 +53,7 @@ public:
 
     bool operator<(RegexpOperator const& rhs);
     bool operator>(RegexpOperator const& rhs);
+    bool operator==(RegexpOperator const& rhs);
     bool operator>=(RegexpOperator const& rhs);
     bool operator<=(RegexpOperator const& rhs);
 
