@@ -79,7 +79,8 @@ private:
 // constructs a hashtable of fixed size
 template <class T>
 PearsonHashtable8<T>::PearsonHashtable8()
-        : Hashtable<T>(HASH_TABLE_SIZE_) {
+        : Hashtable<T>(HASH_TABLE_SIZE_)
+{
 
     initLookupTable();
     initHashTable();
@@ -92,7 +93,11 @@ template <class T>
 int PearsonHashtable8<T>::add(string key, T const& entry) {
 
     int hash = hashfunc(key);
-    table_->at(hash) = new T(entry);
+
+    if(table_->at(hash) == NULL)
+        table_->at(hash) = new T(entry);
+    else
+        throw CollisionError(key);
 
     return hash;
 }
