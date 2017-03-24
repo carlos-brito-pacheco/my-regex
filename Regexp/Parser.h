@@ -38,7 +38,7 @@
 #define MYREGEX_REGEXPPARSER_H
 
 
-class RegexpParser {
+class Parser {
 
 };
 
