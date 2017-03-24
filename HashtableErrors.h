@@ -46,11 +46,12 @@ class KeyNotFoundError : public exception {
 
 public:
     KeyNotFoundError(string key)
-            : key_(key) {
+            : key_(key)
+    {
         message_ = "Requested entry with key: \"" + key_ + "\" could not be found";
     }
 
-    ~KeyNotFoundError() throw(){
+    ~KeyNotFoundError() throw() {
 
     }
 
@@ -60,4 +61,16 @@ public:
     }
 };
 
+
+class CollisionError : public exception {
+    const string key_;
+    string message_;
+
+public:
+    CollisionError(string key)
+            : key_(key)
+    {
+        message_ = "Insertion of entry with key: \"" + key_ + "\" causes collision."
+    }
+};
 #endif //MYREGEX_HASHTABLEERRORS_H
