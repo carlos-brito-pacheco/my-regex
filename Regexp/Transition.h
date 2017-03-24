@@ -1,7 +1,7 @@
-//<editor-fold desc="License">
+//<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/22/17 Carlos Brito
+ *  Copyright (C) 3/24/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,45 +24,42 @@
  * Date: 3/22/17.
  *
  * Description:
- * This is the header file of the class Regexp.
- * This contains all the definitions of its functions
- * and provides insight to its behaviour.
+ * Header file for the class Transition. A transition,
+ *
  *
  * TODO:
- * - Add support for testing equivalence between regexp
- * (this problem is known to be PSPACE-complete so it isn't trivial to implement)
- *
- * -
- *
- *
+ * 
+ * 
+ * 
+ * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
-#ifndef MYREGEX_REGEXP_H
-#define MYREGEX_REGEXP_H
+#ifndef MYREGEX_TRANSITION_H
+#define MYREGEX_TRANSITION_H
 
-#include <string>
-#include <set>
-#include "Hashtable.h"
-#include "RegexpOperator.h"
+class State;
 
-using namespace std;
-
-class Regexp {
-    static Hashtable<RegexpOperator> *operator_set_;
-    string regexp_;
-    string postfix_;
+class Transition {
+    char symbol_;
+    State *state_;
 
 public:
-    Regexp(string regexp);
-    string toPostfix();
-    string regexp();
-private:
-    bool isoperator(char op);
+    Transition(char symbol, State *state)
+            : symbol_(symbol),
+              state_(state)
+    {
+    }
 
-    friend ostream& operator<<(ostream& os, Regexp const& regexp);
+    char symbol() {
+        return symbol_;
+    }
+
+    State* state() {
+        return state_;
+    }
 };
 
 
-#endif //MYREGEX_REGEXP_H
+#endif //MYREGEX_TRANSITION_H

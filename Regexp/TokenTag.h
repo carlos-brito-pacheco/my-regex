@@ -24,60 +24,62 @@
  * Date: 3/22/17.
  *
  * Description:
- * This is a template class that manipulates "Token" types
- * during parsing. An object of type Token stores the lexeme
- * and has an attribute tag to indicate which "class" the token
- * belongs to. A representation could be this:
- *
- * Token<TokenTag> token(relop, "<=");
  *
  * TODO:
- *
- *
+ * 
+ * 
+ * 
+ * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
+#ifndef MYREGEX_TOKENTAG_H
+#define MYREGEX_TOKENTAG_H
 
-#ifndef TOKEN_H
-#define TOKEN_H
-
+#include <iostream>
 #include <string>
-
 using namespace std;
 
-template <class TTokenTag>
-class Token {
-private:
-    const TTokenTag tag_;
-    const string lexeme_;
+class TokenTag {
+    const int id_;
+    const string name_;
 
 public:
-    Token(TTokenTag tag, string l);
+    TokenTag(int id, string name);
 
-    TTokenTag tag();
-    string lexeme();
+    int id();
+    string name();
 
+    bool operator==(TokenTag const& rhs);
+    bool operator!=(TokenTag const& rhs);
+    friend ostream& operator<<(ostream& os, TokenTag const& obj);
 };
 
-template <class TagType>
-Token<TagType>::Token(TagType tag, string l)
-        : tag_(tag),
-          lexeme_(l)
+TokenTag::TokenTag(int id, string name)
+        : id_(id),
+          name_(name)
 {
 }
 
-template <class TagType>
-string Token<TagType>::lexeme()
-{
-    return lexeme_;
+int TokenTag::id() {
+    return id_;
 }
 
-template <class TagType>
-TagType Token<TagType>::tag()
-{
-    return tag_;
+string TokenTag::name() {
+    return name_;
 }
 
+ostream &operator<<(ostream& os, TokenTag const &obj) {
+    return os << obj.name_;
+}
 
-#endif //TOKEN_H
+bool TokenTag::operator==(TokenTag const& rhs) {
+    return this->id_ == rhs.id_;
+}
+
+bool TokenTag::operator!=(TokenTag const &rhs) {
+    return !(*this == rhs);
+}
+
+#endif //MYREGEX_TOKENTAG_H

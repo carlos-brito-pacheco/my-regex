@@ -43,8 +43,8 @@
 #include <queue>
 #include <cctype>
 #include "Regexp.h"
-#include "RegexpErrors.h"
-#include "PearsonHashtable8.h"
+#include "Errors.h"
+#include "../Hashtable/PearsonHashtable8.h"
 
 
 // Static variable initialization

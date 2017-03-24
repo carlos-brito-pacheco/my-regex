@@ -43,7 +43,8 @@ public:
 
 template <class T>
 Hashtable<T>::Hashtable(size_t size)
-        : size_(size) {
+        : size_(size)
+{
 }
 
 template <class T>
