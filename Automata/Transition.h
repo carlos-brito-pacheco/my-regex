@@ -24,7 +24,13 @@
  * Date: 3/22/17.
  *
  * Description:
- * Header file for the class Transition. A transition,
+ * An object of the type Transition is meant to be inside
+ * an object of the type State. A transition can be thought of
+ * as an edge connecting a state to another. The transition indicates:
+ *
+ * - The source state
+ * - The required symbol to be consumed
+ * - The destination state
  *
  *
  * TODO:
@@ -43,12 +49,14 @@ class State;
 
 class Transition {
     char symbol_;
-    State *state_;
+    State *source_;
+    State *destination_;
 
 public:
-    Transition(char symbol, State *state)
-            : symbol_(symbol),
-              state_(state)
+    Transition(State *source, State *destination, char symbol)
+            : source_(source),
+              destination_(destination),
+              symbol_(symbol)
     {
     }
 
@@ -56,8 +64,12 @@ public:
         return symbol_;
     }
 
-    State* state() {
-        return state_;
+    State* source() {
+        return source_;
+    }
+
+    State* destination() {
+        return destination_;
     }
 };
 
