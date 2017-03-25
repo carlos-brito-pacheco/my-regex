@@ -70,7 +70,11 @@ public:
     CollisionError(string key)
             : key_(key)
     {
-        message_ = "Insertion of entry with key: \"" + key_ + "\" causes collision."
+        message_ = "Insertion of entry with key: \"" + key_ + "\" causes collision.";
+    }
+
+    ~CollisionError() throw() {
+
     }
 };
 #endif //MYREGEX_HASHTABLEERRORS_H

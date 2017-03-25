@@ -62,7 +62,7 @@ public:
     PearsonHashtable8();
 
     int add(string key, T const& entry);
-    T get(string key);
+    T* get(string key);
     bool containsKey(string key);
     void remove(string key);
 
@@ -105,13 +105,11 @@ int PearsonHashtable8<T>::add(string key, T const& entry) {
 // -----------------------
 // gets item of type T from hashtable
 template <class T>
-T PearsonHashtable8<T>::get(string key) {
+T* PearsonHashtable8<T>::get(string key) {
     int hash = hashfunc(key);
 
-    T *entry = table_->at(hash);
-
-    if (entry != NULL)
-        return *entry;
+    if (table_->at(hash) != NULL)
+        return table_->at(hash);
     else
         throw KeyNotFoundError(key);
 }

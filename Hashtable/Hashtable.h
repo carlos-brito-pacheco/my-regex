@@ -34,7 +34,7 @@ public:
     virtual size_t size() const;
 
     virtual int add(string key, T const& entry)= 0;
-    virtual T get(string key)= 0;
+    virtual T* get(string key)= 0;
     virtual void remove(string key)= 0;
     virtual bool containsKey(string key)= 0;
 };
