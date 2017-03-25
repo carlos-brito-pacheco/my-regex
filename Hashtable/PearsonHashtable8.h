@@ -24,10 +24,16 @@
  * Date: 3/22/17.
  *
  * Description:
+ * A PearsonHashtable8 is a Hashtable which has uses
+ * the Pearson Hashing function to obtain the key.
+ * This particular case is an 8-bit implementation,
+ * which means we only have 256 (0-255) available keys.
+ *
+ * Uses of this class could be for a table of reserved words
+ * and symbols of a compiler.
  *
  * TODO:
  * Implement collision handling
- * Implement perfect hashing
  * Check deletion of key in hashtable
  * Handle exceptions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
