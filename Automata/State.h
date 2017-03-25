@@ -25,11 +25,7 @@
  *
  * Description:
  *
- * An object of the type Transition is meant to be inside
- * an object of the type State. A transition can be thought of
- * as an edge connecting a state to another. The transition only
- * indicates the symbol and the next state and does not contain
- * information about the previous state.
+ *
  *
  * TODO:
  * 
@@ -44,21 +40,24 @@
 #define MYREGEX_STATE_H
 
 #include <string>
-#include <list>
+#include <vector>
 
 #include "../Hashtable/Hashtable.h"
 
 using namespace std;
 
-class Transition;
+class Transition; // forward declare: state and transition are codependent
 
 class State {
-    string name;
-    list<Transition> *transitions_;
-    bool is_end = false;
+    string name_;
+    vector<Transition> *transitions_;
+    bool is_end;
 
 public:
-    void addTransition(State s, char symbol);
+    State(string name);
+    void addTransition(State *destination, char symbol);
+
+    string name();
     bool isEnd();
 
 };

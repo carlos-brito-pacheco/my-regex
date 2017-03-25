@@ -34,4 +34,30 @@
  */
 //</editor-fold>
 
+#include "Transition.h"
 #include "State.h"
+
+State::State(string name)
+        : name_(name),
+          is_end(false)
+{
+
+}
+
+string State::name() {
+    return name_;
+}
+
+bool State::isEnd() {
+    return is_end;
+}
+
+void State::addTransition(State *destination, char symbol) {
+
+    Transition t(this, destination, symbol); // add transition from this state to destination
+    transitions_->push_back(t);
+}
+
+
+
+
