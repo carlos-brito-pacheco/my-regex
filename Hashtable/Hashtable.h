@@ -72,7 +72,8 @@ class Hashtable {
 
 
     // TYPEDEFS
-    typedef typename std::pair<Key, T*> hash_entry;
+    typedef typename std::pair<Key, T> hash_entry;
+
     typedef typename std::list<hash_entry> bucket;
     typedef typename std::vector<bucket> index_table;
     typedef typename index_table::iterator index_iterator;
@@ -83,28 +84,29 @@ public:
     class iterator {
     public:
         typedef iterator self_type;
-        typedef T value_type;
-        typedef T& reference;
-        typedef T* pointer;
+        typedef hash_entry value_type;
+        typedef hash_entry& reference;
+        typedef hash_entry* pointer;
+        typedef Key* key_pointer;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
 
-        iterator(index_iterator index_it, bucket_iterator bucket_it)
+        /*
+         * Note: Be super careful to NOT instantiate the iterator with  a copy of the bucket or the table
+         * Do so with a REFERENCE or POINTER.
+         */
+        iterator(index_iterator const& index_it, bucket_iterator const& bucket_it)
                 : index_it_(index_it),
                   bucket_it_(bucket_it)
-        {
-            entry_ptr_ = bucket_it->second;
-        }
+        {}
 
         self_type operator++() { // prefix
-            if (bucket_it_ == index_it_->end())
+            if ( bucket_it_ == index_it_->end() )
+                // if we're at bucket end
             {
-                bucket_it_ = (index_it_++)->begin();
-                entry_ptr_ = bucket_it_->second;
-            }
-            else
-            {
-                entry_ptr_ = (bucket_it_++)->second;
+                bucket_it_ = (index_it_++)->begin(); // advance to next index and start of bucket
+            } else {
+                bucket_it_++;
             }
             return *this;
         }
@@ -113,27 +115,23 @@ public:
             self_type it = *this; ++(*this); return it;
         }
 
-        reference operator*() { return *entry_ptr_; }
-        pointer operator->() { return entry_ptr_;}
+        reference operator*() { return *bucket_it_; }
+        pointer operator->() { return &*bucket_it_; }
 
-        bool operator==(const self_type& rhs) { return false; }
-        bool operator!=(const self_type& rhs) { return false; }
+        bool operator==(const self_type& rhs) { return bucket_it_ == rhs.bucket_it_; }
+        bool operator!=(const self_type& rhs) { return !(*this == rhs); }
 
     private:
-
-        pointer entry_ptr_;
-
-        bucket_iterator bucket_it_;
         index_iterator index_it_;
+        bucket_iterator bucket_it_;
     };
 
 
     // VARIABLES
 private:
+    KeyEqual equal_to = KeyEqual();
     index_table table_;
-
     Hasher h;
-    KeyEqual equal_to;
     const size_t size_;
 
     // METHODS
@@ -153,35 +151,72 @@ public:
         return size_;
     }
 
-    virtual size_t insert(Key key, T const &entry) {
+    virtual iterator insert(Key const& key, T const& obj) {
 
         size_t index = h(key);
         index %= size_;
 
+        bucket *b = &table_[index];
+
         // Verify that we're not adding a duplicate hash_entry
-        for (bucket_iterator it = table_[index].begin(); it != table_[index].end(); it++)
-            if ( equal_to(it->first, key) )
-                throw DuplicateEntryError(index);
+        for (bucket_iterator it = b->begin(); it != b->end(); it++)
+            if ( equal_to( it->first, key ) )
+                return this->end();
 
-        table_[index].push_back( std::make_pair( key, new T(entry) ) ); // create copy of object using copy constructor
+        b->push_back( hash_entry(key, obj) ); // push to back of bucket
 
-        return 0;
+        return iterator( table_.begin()+index, --(b->end()) );
     }
 
     virtual iterator find(Key const& key) {
         size_t index = h(key);
         index %= size_;
+
+        bucket *b = &table_[index];
+        for (bucket_iterator it = b->begin(); it != b->end(); it++)
+            // iterate over bucket
+            if ( equal_to( key, it->first ) )
+                // if we find key return iterator to it
+                return iterator( table_.begin()+index, it );
+
+        return this->end();
     }
 
     virtual void remove(Key key) {
+        size_t index = h(key);
+        index %= size_;
+
+        bucket *b = &table_[index];
+        for (bucket_iterator it = b->begin(); it != b->end(); it++)
+            if (equal_to(key, it->first))
+                b->erase(it); // erase entry
     }
 
     virtual bool containsKey(Key key) {
+        size_t index = h(key);
+        index %= size_;
+
+        bucket *b = &table_[index];
+        for (bucket_iterator it = b->begin(); it != b->end(); it++)
+            if (equal_to(key, it->first))
+                return true;
+
+        return false;
     }
 
     iterator begin() {
-        bucket bucket0 = table_[0];
-        return iterator(table_.begin(), bucket0.begin());
+        bucket* first_bucket = &table_[0];
+        return iterator(table_.begin(), first_bucket->begin());
+    }
+
+    iterator end() {
+        bucket* last_bucket = &table_[size_ - 1];
+        return iterator(table_.end(), last_bucket->end());
+    }
+
+    iterator& front() {
+        bucket* first_bucket = &table_[0];
+        return first_bucket->front();
     }
 
 
