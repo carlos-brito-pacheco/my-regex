@@ -25,7 +25,7 @@
  *
  * Description:
  *
- * This is a class implementing a Hashtable à la STL.
+ * This is a class implementing a hashtable à la STL.
  *
  * This header file has been compiled for C++11.
  *
@@ -55,16 +55,14 @@
 #include <vector>
 #include <list>
 
-#include "HashtableErrors.h"
-
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
 template <
         class Key,
         class T,
         class Hasher = std::hash<Key>,
         class KeyEqual = std::equal_to<Key>
-        >
-class Hashtable {
+>
+class hashtable {
 
 
     // TYPEDEFS STRUCTURES
@@ -135,7 +133,7 @@ private:
 
     // METHODS
 public:
-    Hashtable(const size_t size)
+    hashtable(const size_t size)
             : size_(size),
               h(Hasher()),
               equal_to(KeyEqual())
@@ -143,7 +141,7 @@ public:
         table_ = vector<bucket>(size);
     }
 
-    virtual ~Hashtable() {
+    virtual ~hashtable() {
     }
 
     virtual size_t size() const {

@@ -46,7 +46,7 @@
 #include <iostream>
 #include <string>
 
-#include "Hashtable.h"
+#include "hashtable.h"
 
 using namespace std;
 
