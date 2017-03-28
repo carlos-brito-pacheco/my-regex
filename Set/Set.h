@@ -37,14 +37,23 @@
 #ifndef MYREGEX_SET_H
 #define MYREGEX_SET_H
 
-#include "../Hashtable/Hashtable.h"
+#include <cstddef>
+#include <functional>
+#include <vector>
+#include "../Hashtable/hashtable.h"
 
-template <class T>
-class Set<T> : public Hashtable<T>{
-    size_t cardinality_;
+template <
+        class Key,
+        class T,
+        class Hasher = std::hash<Key>,
+        class KeyEqual = std::equal_to<Key>>
+
+class Set<T> {
+
 
 public:
-    
+
+
 };
 
 
