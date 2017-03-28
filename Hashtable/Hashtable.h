@@ -74,11 +74,6 @@ class hashtable {
     typedef typename index_table::iterator index_iterator;
     typedef typename bucket::iterator bucket_iterator;
 
-    // TYPEDEF GENERAL
-
-    typedef hash_entry& reference;
-    typedef hash_entry value_type;
-    typedef hash_entry* pointer;
 
     // ITERATOR CLASS
 public:
@@ -87,6 +82,9 @@ public:
         typedef iterator self_type;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
+        typedef hash_entry& reference;
+        typedef hash_entry value_type;
+        typedef hash_entry* pointer;
 
         /*
          * Note: Be super careful to NOT instantiate the iterator with  a copy of the bucket or the table
