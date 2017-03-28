@@ -138,7 +138,7 @@ public:
               h(Hasher()),
               equal_to(KeyEqual())
     {
-        table_ = vector<bucket>(size);
+        table_ = std::vector<bucket>(size);
     }
 
     virtual ~hashtable() {

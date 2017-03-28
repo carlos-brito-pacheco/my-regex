@@ -52,17 +52,19 @@ using namespace std;
 
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
 
-class PearsonHasher {
+class PearsonHasher8 {
 
-    static const size_t LOOKUP_TABLE_SIZE_ = 256;
     unsigned char *lookup_;
 
 public:
-    PearsonHasher() {
+    static const size_t table_size_ = 256;
+
+public:
+    PearsonHasher8() {
 
         // init table
-        lookup_ = new unsigned char [ LOOKUP_TABLE_SIZE_ ];
-        for (int i = 0; i < LOOKUP_TABLE_SIZE_; i++)
+        lookup_ = new unsigned char [ table_size_ ];
+        for (int i = 0; i < table_size_; i++)
             lookup_[i] = i;
     }
 
@@ -75,6 +77,11 @@ public:
 };
 
 template <class T>
-class PearsonHashtable : public Hashtable<T,string, PearsonHasher> {};
+class PearsonHashtable8 : public hashtable<string, T, PearsonHasher8> {
+public:
+    PearsonHashtable8()
+            : hashtable<string,T,PearsonHasher8>(PearsonHasher8::table_size_) {}
+
+};
 
 #endif //MYREGEX_PEARSONHASHTABLE8_H
