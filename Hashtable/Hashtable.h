@@ -37,11 +37,7 @@
  *
  * TODO:
  *
- * Re-implement methods
  * Implement operator=
- * Implement operator==
- * Implement iterator operators
- * Finish custom iterator class
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -71,23 +67,26 @@ template <
 class Hashtable {
 
 
-    // TYPEDEFS
+    // TYPEDEFS STRUCTURES
     typedef typename std::pair<Key, T> hash_entry;
-
     typedef typename std::list<hash_entry> bucket;
     typedef typename std::vector<bucket> index_table;
+
+    // TYPEDEFS ITERATORS
     typedef typename index_table::iterator index_iterator;
     typedef typename bucket::iterator bucket_iterator;
+
+    // TYPEDEF GENERAL
+
+    typedef hash_entry& reference;
+    typedef hash_entry value_type;
+    typedef hash_entry* pointer;
 
     // ITERATOR CLASS
 public:
     class iterator {
     public:
         typedef iterator self_type;
-        typedef hash_entry value_type;
-        typedef hash_entry& reference;
-        typedef hash_entry* pointer;
-        typedef Key* key_pointer;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
 
@@ -213,12 +212,6 @@ public:
         bucket* last_bucket = &table_[size_ - 1];
         return iterator(table_.end(), last_bucket->end());
     }
-
-    iterator& front() {
-        bucket* first_bucket = &table_[0];
-        return first_bucket->front();
-    }
-
 
 };
 
