@@ -24,7 +24,7 @@
  * Date: 3/22/17.
  *
  * Description:
- * A PearsonHashtable8 is a Hashtable which has uses
+ * A PearsonHashtable8 is a Hashtable which uses
  * the Pearson Hashing function to obtain the key.
  * This particular case is an 8-bit implementation,
  * which means we only have 256 (0-255) available keys.
@@ -43,153 +43,38 @@
 #ifndef MYREGEX_PEARSONHASHTABLE8_H
 #define MYREGEX_PEARSONHASHTABLE8_H
 
-#include <vector>
 #include <iostream>
-#include <algorithm>
-#include <ctime>
+#include <string>
 
 #include "Hashtable.h"
-#include "HashtableErrors.h"
 
 using namespace std;
 
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
 
-template <class T>
-class PearsonHashtable8 : public Hashtable<T> {
-    static const size_t  HASH_TABLE_SIZE_ = 256;
+class PearsonHasher {
+
     static const size_t LOOKUP_TABLE_SIZE_ = 256;
-
-    vector<T*> *table_;
-    vector<unsigned char> *lookup_table_;
-
+    unsigned char *lookup_;
 
 public:
-    PearsonHashtable8();
+    PearsonHasher() {
 
-    int add(string key, T const& entry);
-    T* get(string key);
-    bool containsKey(string key);
-    void remove(string key);
+        // init table
+        lookup_ = new unsigned char [ LOOKUP_TABLE_SIZE_ ];
+        for (int i = 0; i < LOOKUP_TABLE_SIZE_; i++)
+            lookup_[i] = i;
+    }
 
-private:
-    int hashfunc(string key);
-    void initLookupTable();
-    void initHashTable();
+    virtual size_t operator()(string const& key) const {
+        size_t hash = 0;
+        for (string::const_iterator it = key.begin(); it != key.end(); it++)
+            hash = lookup_[ hash ^ *it ];
+        return hash;
+    }
 };
 
-
-// - - - - - - - - CLASS FUNCTION BODIES  - - - - - - - - //
-
-// -----------------------
-// constructs a hashtable of fixed size
 template <class T>
-PearsonHashtable8<T>::PearsonHashtable8()
-        : Hashtable<T>(HASH_TABLE_SIZE_)
-{
-
-    initLookupTable();
-    initHashTable();
-}
-
-// ------------------------
-// adds an entry of type T into hashtable
-// returns the hashkey of the new entry
-template <class T>
-int PearsonHashtable8<T>::add(string key, T const& entry) {
-
-    int hash = hashfunc(key);
-
-    if(table_->at(hash) == NULL)
-        table_->at(hash) = new T(entry);
-    else
-        throw CollisionError(key);
-
-    return hash;
-}
-
-// -----------------------
-// gets item of type T from hashtable
-template <class T>
-T* PearsonHashtable8<T>::get(string key) {
-    int hash = hashfunc(key);
-
-    if (table_->at(hash) != NULL)
-        return table_->at(hash);
-    else
-        throw KeyNotFoundError(key);
-}
-
-// -------------------------
-// removes specified key from table
-template <class T>
-void PearsonHashtable8<T>::remove(string key) {
-    int hash = hashfunc(key);
-    T *entry = table_->at(hash);
-    table_->at(hash) = NULL; // is this whole sequence correct? must check
-    delete entry;
-}
-
-// -----------------------
-// returns true if the specified key is in the hashtable
-template <class T>
-bool PearsonHashtable8<T>::containsKey(string key) {
-    int hash = hashfunc(key);
-    return table_->at(hash) != NULL;
-}
-
-// ----------------------
-// returns the hash for the key
-template  <class T>
-int PearsonHashtable8<T>::hashfunc(string key) {
-
-    /* Hashing is done using Pearson Hashing function.
-     *
-     * Please consult for a brief description:
-     * https://en.wikipedia.org/wiki/Pearson_hashing
-     *
-     * THIS IS NOT a perfect hashing implementation.
-     *
-     */
-    unsigned char hash = (unsigned char) (key.length() % (LOOKUP_TABLE_SIZE_ - 1));
-    for (string::iterator it = key.begin(); it != key.end(); it++)
-    {
-        hash = lookup_table_->at( hash ^ (*it) ) % (unsigned char) (LOOKUP_TABLE_SIZE_ - 1);
-    }
-
-    return (int) hash;
-}
-
-// ------------------------
-// initializes the lookup table to be used
-template <class T>
-void PearsonHashtable8<T>::initLookupTable() {
-
-    // Seed
-    srand( unsigned ( time(0) ));
-
-    // Allocate space
-    lookup_table_ = new vector<unsigned char>(LOOKUP_TABLE_SIZE_);
-
-    // Fill table with values [0...255]
-    int i = 0;
-    for (vector<unsigned char>::iterator it = lookup_table_->begin(); it != lookup_table_->end(); it++)
-    {
-        *it = i++;
-    }
-
-    // Shuffle array
-    random_shuffle(lookup_table_->begin(), lookup_table_->end());
-}
-
-// ----------------------
-// initializes the hashtable
-template <class T>
-void PearsonHashtable8<T>::initHashTable() {
-    // Allocate space for table
-    table_ = new vector<T*>(HASH_TABLE_SIZE_);
-}
-
-
+class PearsonHashtable : public Hashtable<T,string, PearsonHasher> {};
 
 #endif //MYREGEX_PEARSONHASHTABLE8_H
