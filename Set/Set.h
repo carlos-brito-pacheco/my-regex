@@ -48,7 +48,7 @@ template <
         class Hasher = std::hash<Key>,
         class KeyEqual = std::equal_to<Key>>
 
-class Set<T> {
+class set<T> {
 
 
 public:
