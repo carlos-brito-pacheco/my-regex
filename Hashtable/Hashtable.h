@@ -37,11 +37,16 @@
  *
  * TODO:
  *
- * Implement operator=
- * Implement operator[]
+ * - Implement operator=
+ * - Implement operator[]
  *
  *
- * (?) Overload iterator operator() on iterator so we can typedef something like this
+ * Iterator
+ * - Implement operator--
+ * - Implement constructor parameter validation to verify that
+ * the index of the entry corresponds to the index passed
+ *
+ *
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -68,20 +73,31 @@ template <
 >
 class hashtable {
 
+public:
+    class iterator;
+    class bucket_type;
 
     // TYPEDEFS STRUCTURES
     typedef typename std::pair<Key, T> hash_entry_type;
-    typedef typename std::list<hash_entry_type> bucket_type;
+//    typedef typename std::list<hash_entry_type> bucket_type;
     typedef typename std::vector<bucket_type> index_table;
 
-public:
     // TYPEDEFS ITERATORS
     typedef typename index_table::iterator index_iterator;
     typedef typename bucket_type::iterator bucket_iterator;
 
+    class bucket_type : public std::list<hash_entry_type> {
+        size_t index_;
+
+    public:
+        bucket_type(size_t index)
+                : index_(index)
+        {}
+
+        size_t index() { return index_; }
+    };
 
     // ITERATOR CLASS
-public:
     class iterator {
     public:
         typedef iterator self_type;
@@ -92,37 +108,59 @@ public:
         typedef hash_entry_type* pointer;
 
 
-        iterator(hashtable const& table, size_t index, bucket_iterator const& entry)
+        // Be careful to instantiate an entry at its corresponding index
+        // Else, undefined behaviour occurs
+        iterator(hashtable& table, size_t index, bucket_iterator const& entry)
                 : t_(table),
                   index_(index),
                   entry_(entry)
         {}
 
-        iterator(hashtable const& table, size_t index)
+        iterator(hashtable & table, size_t index)
                 : t_(table),
                   index_(index),
                   entry_(table.bucket(index).begin())
         {}
 
-        iterator(hashtable const& table)
+        iterator(hashtable & table)
                 : t_(table),
                   index_(0),
                   entry_(table.bucket(0).begin()) // start of first bucket
         {}
 
         self_type operator++() { // prefix
-            std:: cout << "++: " << index_ << std::endl;
-            if ( ++index_ == t_.bucket_count()-1 )
-                return t_.end();
 
-            while ( t_.bucket(index_).empty() )// current bucket is empty
+            if (  t_.bucket(index_).empty() )
             {
-                if ( ++index_ == t_.bucket_count() - 1 ) // we reached the last bucket and still no bucket found
-                    return t_.end();
+                do // look for non empty bucket
+                {
+                    index_++; // advance to next bucket
 
+                    if ( index_ == t_.bucket_count() ) // still no bucket found
+                        return t_.end();
+
+                } while ( t_.bucket(index_).empty() ); // current bucket is empty
+                entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+
+                return *this;
+            } else {
+                if ( ++entry_ != t_.bucket(index_).end() )
+                {
+                    return *this;
+                } else {
+                    do // look for non empty bucket
+                    {
+                        index_++; // advance to next bucket
+
+                        if ( index_ == t_.bucket_count() ) // still no bucket found
+                            return t_.end();
+
+                    } while ( t_.bucket(index_).empty() ); // current bucket is empty
+
+                    entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+                    return *this;
+                }
             }
-            entry_ = t_.bucket(index_).begin(); // return beginning of first non-empty bucket
-            return *this;
         }
 
         self_type operator++(int dummy) { // postfix
@@ -130,13 +168,13 @@ public:
         }
 
         reference operator*() { return *entry_; }
-        pointer operator->() { return &*entry_; }
+        bucket_iterator operator->() { return entry_; }
 
         bool operator==(const self_type& rhs) { return entry_ == rhs.entry_; }
         bool operator!=(const self_type& rhs) { return !(*this == rhs); }
 
     private:
-        hashtable t_;
+        hashtable &t_;
         size_t index_;
         bucket_iterator entry_;
     };
@@ -156,7 +194,8 @@ public:
               h_(Hasher()),
               equal_to_(KeyEqual())
     {
-        table_ = std::vector<bucket_type>(buckets);
+        for (int i = 0; i < buckets; i++)
+            table_.push_back( bucket_type(i) );
     }
 
     virtual ~hashtable() {
@@ -166,7 +205,7 @@ public:
         return bucket_count_;
     }
 
-    virtual iterator insert(Key const& key, T const& obj) {
+    virtual iterator insert(Key const key, T const& obj) {
 
         size_t index = h_(key);
         index %= bucket_count_;
@@ -226,24 +265,25 @@ public:
     iterator begin()  {
         size_t index = 0;
 
-        while ( bucket(index).size() == 0 )// current bucket is empty
+        while ( bucket(index).empty() )// current bucket is empty
         {
-            std::cout << index << std::endl;
+            if ( index == bucket_count() - 1 )
+                return iterator( *this, index, bucket(bucket_count() - 1).end() ); // return end of last bucket
 
-            if ( ++index == bucket_count() - 1 )
-                return iterator(*this, index, bucket(index).end() ); // return end of last bucket
+            index++;
         }
         return iterator(*this, index, bucket(index).begin()); // return beginning of first non-empty bucket
     }
 
     iterator end()  {
-        size_t index = bucket_count();
+        size_t index = bucket_count() - 1;
 
-        while ( bucket(index).size() == 0 ) // current bucket is empty
+        while ( bucket(index).empty() ) // current bucket is empty
         {
-            if ( --index == 0 )
-                return iterator( *this, index, bucket(index).begin() ); // return start of first bucket
+            if ( index == 0 )
+                return iterator( *this, index, bucket(bucket_count() - 1).end() ); // return end of last bucket
 
+            index--;
         }
         return iterator( *this, index, bucket(index).end() ); // return end of first non-empty bucket
     }
