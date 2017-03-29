@@ -38,6 +38,10 @@
  * TODO:
  *
  * Implement operator=
+ * Implement operator[]
+ *
+ *
+ * (?) Overload iterator operator() on iterator so we can typedef something like this
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -66,13 +70,14 @@ class hashtable {
 
 
     // TYPEDEFS STRUCTURES
-    typedef typename std::pair<Key, T> hash_entry;
-    typedef typename std::list<hash_entry> bucket;
-    typedef typename std::vector<bucket> index_table;
+    typedef typename std::pair<Key, T> hash_entry_type;
+    typedef typename std::list<hash_entry_type> bucket_type;
+    typedef typename std::vector<bucket_type> index_table;
 
+public:
     // TYPEDEFS ITERATORS
     typedef typename index_table::iterator index_iterator;
-    typedef typename bucket::iterator bucket_iterator;
+    typedef typename bucket_type::iterator bucket_iterator;
 
 
     // ITERATOR CLASS
@@ -82,27 +87,41 @@ public:
         typedef iterator self_type;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
-        typedef hash_entry& reference;
-        typedef hash_entry value_type;
-        typedef hash_entry* pointer;
+        typedef hash_entry_type& reference;
+        typedef hash_entry_type value_type;
+        typedef hash_entry_type* pointer;
 
-        /*
-         * Note: Be super careful to NOT instantiate the iterator with  a copy of the bucket or the table
-         * Do so with a REFERENCE or POINTER.
-         */
-        iterator(index_iterator const& index_it, bucket_iterator const& bucket_it)
-                : index_it_(index_it),
-                  bucket_it_(bucket_it)
+
+        iterator(hashtable const& table, size_t index, bucket_iterator const& entry)
+                : t_(table),
+                  index_(index),
+                  entry_(entry)
+        {}
+
+        iterator(hashtable const& table, size_t index)
+                : t_(table),
+                  index_(index),
+                  entry_(table.bucket(index).begin())
+        {}
+
+        iterator(hashtable const& table)
+                : t_(table),
+                  index_(0),
+                  entry_(table.bucket(0).begin()) // start of first bucket
         {}
 
         self_type operator++() { // prefix
-            if ( bucket_it_ == index_it_->end() )
-                // if we're at bucket end
+            std:: cout << "++: " << index_ << std::endl;
+            if ( ++index_ == t_.bucket_count()-1 )
+                return t_.end();
+
+            while ( t_.bucket(index_).empty() )// current bucket is empty
             {
-                bucket_it_ = (index_it_++)->begin(); // advance to next index and start of bucket
-            } else {
-                bucket_it_++;
+                if ( ++index_ == t_.bucket_count() - 1 ) // we reached the last bucket and still no bucket found
+                    return t_.end();
+
             }
+            entry_ = t_.bucket(index_).begin(); // return beginning of first non-empty bucket
             return *this;
         }
 
@@ -110,104 +129,129 @@ public:
             self_type it = *this; ++(*this); return it;
         }
 
-        reference operator*() { return *bucket_it_; }
-        pointer operator->() { return &*bucket_it_; }
+        reference operator*() { return *entry_; }
+        pointer operator->() { return &*entry_; }
 
-        bool operator==(const self_type& rhs) { return bucket_it_ == rhs.bucket_it_; }
+        bool operator==(const self_type& rhs) { return entry_ == rhs.entry_; }
         bool operator!=(const self_type& rhs) { return !(*this == rhs); }
 
     private:
-        index_iterator index_it_;
-        bucket_iterator bucket_it_;
+        hashtable t_;
+        size_t index_;
+        bucket_iterator entry_;
     };
 
 
     // VARIABLES
 private:
-    KeyEqual equal_to = KeyEqual();
+    KeyEqual equal_to_ = KeyEqual();
     index_table table_;
-    Hasher h;
-    const size_t size_;
+    Hasher h_;
+    const size_t bucket_count_;
 
     // METHODS
 public:
-    hashtable(const size_t size)
-            : size_(size),
-              h(Hasher()),
-              equal_to(KeyEqual())
+    hashtable(const size_t buckets)
+            : bucket_count_(buckets),
+              h_(Hasher()),
+              equal_to_(KeyEqual())
     {
-        table_ = std::vector<bucket>(size);
+        table_ = std::vector<bucket_type>(buckets);
     }
 
     virtual ~hashtable() {
     }
 
     virtual size_t size() const {
-        return size_;
+        return bucket_count_;
     }
 
     virtual iterator insert(Key const& key, T const& obj) {
 
-        size_t index = h(key);
-        index %= size_;
+        size_t index = h_(key);
+        index %= bucket_count_;
 
-        bucket *b = &table_[index];
+        bucket_type *b = &table_[index];
 
         // Verify that we're not adding a duplicate hash_entry
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
-            if ( equal_to( it->first, key ) )
+            if ( equal_to_( it->first, key ) )
                 return this->end();
 
-        b->push_back( hash_entry(key, obj) ); // push to back of bucket
+        b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
 
-        return iterator( table_.begin()+index, --(b->end()) );
+        return iterator( *this, index, --(b->end()) );
     }
 
     virtual iterator find(Key const& key) {
-        size_t index = h(key);
-        index %= size_;
+        size_t index = h_(key);
+        index %= bucket_count_;
 
-        bucket *b = &table_[index];
+        bucket_type *b = &table_[index];
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
             // iterate over bucket
-            if ( equal_to( key, it->first ) )
+            if ( equal_to_( key, it->first ) )
                 // if we find key return iterator to it
-                return iterator( table_.begin()+index, it );
+                return iterator( *this, index, it );
 
         return this->end();
     }
 
     virtual void remove(Key key) {
-        size_t index = h(key);
-        index %= size_;
+        size_t index = h_(key);
+        index %= bucket_count_;
 
-        bucket *b = &table_[index];
+        bucket_type *b = &table_[index];
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
-            if (equal_to(key, it->first))
+            if (equal_to_(key, it->first))
                 b->erase(it); // erase entry
     }
 
     virtual bool containsKey(Key key) {
-        size_t index = h(key);
-        index %= size_;
+        size_t index = h_(key);
+        index %= bucket_count_;
 
-        bucket *b = &table_[index];
+        bucket_type *b = &table_[index];
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
-            if (equal_to(key, it->first))
+            if (equal_to_(key, it->first))
                 return true;
 
         return false;
     }
 
-    iterator begin() {
-        bucket* first_bucket = &table_[0];
-        return iterator(table_.begin(), first_bucket->begin());
+    size_t bucket_count() const {
+        return bucket_count_;
     }
 
-    iterator end() {
-        bucket* last_bucket = &table_[size_ - 1];
-        return iterator(table_.end(), last_bucket->end());
+    iterator begin()  {
+        size_t index = 0;
+
+        while ( bucket(index).size() == 0 )// current bucket is empty
+        {
+            std::cout << index << std::endl;
+
+            if ( ++index == bucket_count() - 1 )
+                return iterator(*this, index, bucket(index).end() ); // return end of last bucket
+        }
+        return iterator(*this, index, bucket(index).begin()); // return beginning of first non-empty bucket
     }
+
+    iterator end()  {
+        size_t index = bucket_count();
+
+        while ( bucket(index).size() == 0 ) // current bucket is empty
+        {
+            if ( --index == 0 )
+                return iterator( *this, index, bucket(index).begin() ); // return start of first bucket
+
+        }
+        return iterator( *this, index, bucket(index).end() ); // return end of first non-empty bucket
+    }
+
+     bucket_type& bucket(size_t index) {
+         return table_[index];
+    }
+
 
 };
 
