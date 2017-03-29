@@ -64,6 +64,8 @@
 #include <vector>
 #include <list>
 
+using namespace std;
+
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
 template <
         class Key,
@@ -115,6 +117,16 @@ public:
                   index_(index),
                   entry_(entry)
         {}
+
+        iterator(hashtable& table, size_t index, size_t local_offset)
+                : t_(table),
+                  index_(index),
+                  entry_(table.bucket(index).begin())
+        {
+            for (int i = 0; i < local_offset; ++i) {
+                entry_++;
+            }
+        }
 
         iterator(hashtable & table, size_t index)
                 : t_(table),
@@ -219,7 +231,7 @@ public:
 
         b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
 
-        return iterator( *this, index, --(b->end()) );
+        return iterator( *this, index, b->size() - 1 );
     }
 
     virtual iterator find(Key const& key) {
@@ -227,11 +239,12 @@ public:
         index %= bucket_count_;
 
         bucket_type *b = &table_[index];
-        for (bucket_iterator it = b->begin(); it != b->end(); it++)
+        size_t offset = 0;
+        for (bucket_iterator it = b->begin(); it != b->end(); it++, offset++)
             // iterate over bucket
             if ( equal_to_( key, it->first ) )
                 // if we find key return iterator to it
-                return iterator( *this, index, it );
+                return iterator( *this, index, offset );
 
         return this->end();
     }
@@ -272,7 +285,7 @@ public:
 
             index++;
         }
-        return iterator(*this, index, bucket(index).begin()); // return beginning of first non-empty bucket
+        return iterator(*this, index, 0 ); // return beginning of first non-empty bucket
     }
 
     iterator end()  {
