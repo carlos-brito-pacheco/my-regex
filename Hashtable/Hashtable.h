@@ -63,8 +63,6 @@
 #include <vector>
 #include <list>
 
-using namespace std;
-
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
 template <
         class Key,
@@ -100,19 +98,10 @@ public:
     // ITERATOR CLASS
     friend class iterator;
 
-    // VARIABLES
-private:
-    KeyEqual equal_to_ = KeyEqual();
-    index_table table_;
-    Hasher h_;
-    const size_t bucket_count_;
-    size_t count_;
-
     // METHODS
 public:
     hashtable(const size_t buckets)
             : bucket_count_(buckets),
-              h_(Hasher()),
               equal_to_(KeyEqual())
     {
         for (int i = 0; i < buckets; i++)
@@ -136,7 +125,7 @@ public:
         // Verify that we're not adding a duplicate hash_entry
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
             if ( equal_to_( it->first, key ) )
-                return this->end();
+                return iterator(*this, index, it); // return iterator to duplicate entry
 
          b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
          count_++;
@@ -242,6 +231,14 @@ public:
     double load_factor() {
         return count_/bucket_count_;
     }
+
+    // VARIABLES
+private:
+    KeyEqual equal_to_ = KeyEqual();
+    index_table table_;
+    Hasher h_;
+    const size_t bucket_count_;
+    size_t count_;
 
 };
 
