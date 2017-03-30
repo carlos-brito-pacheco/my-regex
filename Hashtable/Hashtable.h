@@ -38,7 +38,8 @@
  * TODO:
  *
  * - Implement operator=
- *
+ * - Implement const_iterator
+ * - Implement hashtable(h)
  *
  * Iterator
  * - Implement constructor parameter validation to verify that

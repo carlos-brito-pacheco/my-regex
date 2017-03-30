@@ -24,10 +24,21 @@
  * Date: 3/22/17.
  *
  * Description:
+ * This header file contains the class declarations and definitions for Set.
+ *
+ * The class models the behaviour and notion of a set. The main methods are:
+ *
+ * ( Assuming an element access has average complexity of O(1) )
+ *
+ * - Union ===  O(n)
+ * - Intersection === O(n)
+ * - Difference === O(n)
  *
  * TODO:
- * 
- * 
+ * - Implement operator=
+ * - Implement const_iterator
+ * - Implement Set(s)
+ * - Implement bool SubsetOf(self_type left)
  * 
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -79,7 +90,7 @@ public:
         self_type result = *this;
         for (iterator it = s.begin(); it != s.end(); it++)
             result.insert(*it);
-        
+
         return result;
     }
 
@@ -92,9 +103,9 @@ public:
         return result;
     }
 
-    self_type Difference( self_type &s ) {
+    self_type Difference( self_type &left ) {
         self_type result = *this;
-        for (iterator it = s.begin(); it != s.end(); it++)
+        for (iterator it = left.begin(); it != left.end(); it++)
             if ( this->contains(*it) )
                 result.remove(*it);
 
