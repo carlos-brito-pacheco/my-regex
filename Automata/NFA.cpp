@@ -37,24 +37,45 @@
 #include <string>
 
 #include "NFA.h"
+#include "AutomataErrors.h"
 
 NFA::NFA(std::string start_state_name) {
-    states_ = new Set<State, State::Hasher>(100);
+    state_table_ = new state_table_type(10);
     addState( start_state_name ); // add initial state
 }
 
 NFA::~NFA() {
-    delete states_;
+    delete state_table_;
 }
 
 void NFA::addState(std::string state_name) {
     State s(state_name);
 
-    states_->insert(s);
+    state_table_->insert(state_name, s);
 }
 
 void NFA::addTransition(State* source, State* destination, char symbol) {
     source->addTransition(destination, symbol); // add the transition to the source state
+}
+
+void NFA::addTransition(std::string source_name, std::string destination_name, char symbol) {
+
+    // Get elements
+    state_table_type::iterator src = state_table_->find(source_name);
+    state_table_type::iterator dst = state_table_->find(destination_name);
+
+    // Handle exceptions
+    if (src == state_table_->end())
+        throw StateNotFoundError(source_name);
+    if (dst == state_table_->end())
+        throw StateNotFoundError(destination_name);
+
+    // add transition
+    State *source, *destination;
+    source = &src->second;
+    destination = &dst->second;
+
+    addTransition(source, destination, symbol);
 }
 
 

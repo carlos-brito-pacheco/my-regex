@@ -38,10 +38,11 @@
  * "state3"
  * "whateveryouwant"
  *
+ * Adding an indentical transition has no effect on the set and therefore
+ * isn't added.
+ *
  * TODO:
- * 
- * - Instead of a vector<Transition>, we should probably use a set type
- * of the form set<Transition>.
+ *
  * 
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -61,13 +62,20 @@
 // DECLARATION
 class State {
 
-    std::string name_; // this attribute must be unique to each state
-    Set<Transition, Transition::Hasher> *transitions_;
-    bool is_end;
-
 public:
+    // TYPEDEFS
+    typedef Set<Transition, Transition::Hasher> transition_set_type;
+
     // Classes
-    class Hasher;
+    struct Hasher {
+        std::hash<std::string> h;
+    public:
+        virtual size_t operator()(State state) const {
+            size_t hash = 0;
+            hash = h(state.name());
+            return hash;
+        }
+    };
 
     // Methods
     State(std::string name, size_t bucket_count=100);
@@ -76,9 +84,24 @@ public:
 
     std::string name() const;
     bool isEnd() const;
+
+    transition_set_type& transition_set() {
+        return *transitions_;
+    }
+
+    transition_set_type ctransition_set() const{
+        return *transitions_;
+    }
+
+private:
+    std::string name_; // this attribute must be unique to each state
+    transition_set_type *transitions_;
+    bool is_end;
 };
 
-bool operator==(State const& lhs, State const& rhs) {
+std::ostream& operator<<(std::ostream& os, const State& obj);
+
+inline bool operator==(State const& lhs, State const& rhs) {
     return lhs.name() == rhs.name();
 }
 

@@ -46,20 +46,31 @@
 #ifndef MYREGEX_NFA_H
 #define MYREGEX_NFA_H
 
-#include "../Set/Set.h"
 #include "State.h"
+#include "../Hashtable/Hashtable.h"
 
 class NFA {
-    State *start_state_;
-    Set<State, State::Hasher> *states_;
 
 public:
+
+    // TYPEDEFS
+    typedef hashtable<std::string, State, State::Hasher> state_table_type;
+
+    // METHODS
     NFA(std::string start_state_name);
     ~NFA();
     void addState(std::string state_name);
     void addTransition(State *source_state, State *destination_state, char symbol);
+    void addTransition(std::string source_name, std::string destination_name, char symbol);
 
+    state_table_type table() {
+        return *state_table_;
+    }
 
+private:
+    // VARIABLES
+    state_table_type *state_table_;
+    State *start_state_;
 };
 
 

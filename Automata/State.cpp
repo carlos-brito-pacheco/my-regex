@@ -57,14 +57,3 @@ void State::addTransition(State *destination, char symbol) {
     Transition t(this, destination, symbol); // add transition from this state to destination
     transitions_->insert(t);
 }
-
-class State::Hasher {
-    std::hash<std::string> h;
-public:
-    virtual size_t operator()(State state) const {
-        size_t hash = 0;
-        hash = h(state.name());
-        return hash;
-    }
-};
-

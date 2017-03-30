@@ -36,13 +36,14 @@
 
 #include <string>
 
-#include "Transition.h"
 #include "State.h"
 
 Transition::Transition(State *source, State *destination, char symbol)
         : source_(source),
           destination_(destination),
-          symbol_(symbol)
+          symbol_(symbol),
+          source_name_(source->name()),
+          destination_name_(source->name())
 {}
 
 char Transition::symbol() const {
@@ -57,24 +58,7 @@ State* Transition::destination() const{
     return destination_;
 }
 
-inline bool operator==(Transition const &lhs, Transition const &rhs) {
-
-    return lhs.source() == rhs.source() &&
-           lhs.destination() == rhs.destination() &&
-           lhs.symbol() == rhs.symbol();
+std::ostream& operator<<(std::ostream& os, const State& obj)
+{
+    return os << obj.name();
 }
-
-
-class Transition::Hasher {
-    std::hash<std::string> h;
-public:
-    virtual size_t operator()(Transition transition) const {
-        size_t hash = 0;
-        std::string unique_name = transition.source()->name()
-                                  + std::string(1,transition.symbol())
-                                  + transition.destination()->name();
-
-        hash = h(unique_name);
-        return hash;
-    }
-};

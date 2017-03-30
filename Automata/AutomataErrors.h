@@ -43,16 +43,15 @@
 
 using namespace std;
 
-class DuplicateTransitionError : public exception {
+class StateNotFoundError : public exception {
     string message_;
 
 public:
-    DuplicateTransitionError(Transition t) {
-        message_ = "Duplicate transition being added from " + t.source()->name()
-                + " to " + t.destination()->name() + " with symbol " + string(1, t.symbol());
+    StateNotFoundError(string name) {
+        message_ = "State " + name + " not found!";
     }
 
-    ~DuplicateTransitionError() throw() {
+    ~StateNotFoundError() throw() {
 
     }
 
