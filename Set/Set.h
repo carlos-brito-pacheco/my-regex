@@ -79,14 +79,25 @@ public:
         self_type result = *this;
         for (iterator it = s.begin(); it != s.end(); it++)
             result.insert(*it);
+        
         return result;
     }
 
     self_type Intersection( self_type &s ) {
-        self_type result(table_.bucket_count());
+        self_type result(this->bucket_count());
         for (iterator it = s.begin(); it != s.end(); it++)
             if (this->contains(*it))
                 result.insert(*it);
+
+        return result;
+    }
+
+    self_type Difference( self_type &s ) {
+        self_type result = *this;
+        for (iterator it = s.begin(); it != s.end(); it++)
+            if ( this->contains(*it) )
+                result.remove(*it);
+
         return result;
     }
 
@@ -97,6 +108,15 @@ public:
     iterator end() {
         return iterator(table_.end());
     }
+
+    size_t count() {
+        table_.count();
+    }
+
+    size_t bucket_count() {
+        return table_.bucket_count();
+    }
+
     // VARIABLES
 private:
     size_t bucket_count_;
