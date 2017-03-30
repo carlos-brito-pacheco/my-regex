@@ -81,7 +81,6 @@ public:
 
     // TYPEDEFS STRUCTURES
     typedef typename std::pair<Key, T> hash_entry_type;
-//    typedef typename std::list<hash_entry_type> bucket_type;
     typedef typename std::vector<bucket_type> index_table;
 
     // TYPEDEFS ITERATORS
@@ -100,97 +99,7 @@ public:
     };
 
     // ITERATOR CLASS
-    class iterator {
-    public:
-        typedef iterator self_type;
-        typedef std::forward_iterator_tag iterator_category;
-        typedef int difference_type;
-        typedef hash_entry_type& reference;
-        typedef hash_entry_type value_type;
-        typedef hash_entry_type* pointer;
-
-
-        // Be careful to instantiate an entry at its corresponding index
-        // Else, undefined behaviour occurs
-        iterator(hashtable& table, size_t index, bucket_iterator const& entry)
-                : t_(table),
-                  index_(index),
-                  entry_(entry)
-        {}
-
-        iterator(hashtable& table, size_t index, size_t local_offset)
-                : t_(table),
-                  index_(index),
-                  entry_(table.bucket(index).begin())
-        {
-            for (int i = 0; i < local_offset; ++i) {
-                entry_++;
-            }
-        }
-
-        iterator(hashtable & table, size_t index)
-                : t_(table),
-                  index_(index),
-                  entry_(table.bucket(index).begin())
-        {}
-
-        iterator(hashtable & table)
-                : t_(table),
-                  index_(0),
-                  entry_(table.bucket(0).begin()) // start of first bucket
-        {}
-
-        self_type operator++() { // prefix
-
-            if (  t_.bucket(index_).empty() )
-            {
-                do // look for non empty bucket
-                {
-                    index_++; // advance to next bucket
-
-                    if ( index_ == t_.bucket_count() ) // still no bucket found
-                        return t_.end();
-
-                } while ( t_.bucket(index_).empty() ); // current bucket is empty
-                entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
-
-                return *this;
-            } else {
-                if ( ++entry_ != t_.bucket(index_).end() )
-                {
-                    return *this;
-                } else {
-                    do // look for non empty bucket
-                    {
-                        index_++; // advance to next bucket
-
-                        if ( index_ == t_.bucket_count() ) // still no bucket found
-                            return t_.end();
-
-                    } while ( t_.bucket(index_).empty() ); // current bucket is empty
-
-                    entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
-                    return *this;
-                }
-            }
-        }
-
-        self_type operator++(int dummy) { // postfix
-            self_type it = *this; ++(*this); return it;
-        }
-
-        reference operator*() { return *entry_; }
-        bucket_iterator operator->() { return entry_; }
-
-        bool operator==(const self_type& rhs) { return entry_ == rhs.entry_; }
-        bool operator!=(const self_type& rhs) { return !(*this == rhs); }
-
-    private:
-        hashtable &t_;
-        size_t index_;
-        bucket_iterator entry_;
-    };
-
+    friend class iterator;
 
     // VARIABLES
 private:
@@ -249,7 +158,7 @@ public:
         return this->end();
     }
 
-    virtual void remove(Key key) {
+    virtual void erase(Key key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -259,7 +168,7 @@ public:
                 b->erase(it); // erase entry
     }
 
-    virtual bool containsKey(Key key) {
+    virtual bool contains_key(Key key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -308,4 +217,100 @@ public:
 
 };
 
+template <
+        class Key,
+        class T,
+        class Hasher,
+        class KeyEqual
+>
+class hashtable<Key,T,Hasher,KeyEqual>::iterator {
+public:
+    typedef iterator self_type;
+    typedef std::forward_iterator_tag iterator_category;
+    typedef int difference_type;
+    typedef hash_entry_type& reference;
+    typedef hash_entry_type value_type;
+    typedef hash_entry_type* pointer;
+
+
+    // Be careful to instantiate an entry at its corresponding index
+    // Else, undefined behaviour occurs
+    iterator(hashtable& table, size_t index, bucket_iterator const& entry)
+            : t_(table),
+              index_(index),
+              entry_(entry)
+    {}
+
+    iterator(hashtable& table, size_t index, size_t local_offset)
+            : t_(table),
+              index_(index),
+              entry_(table.bucket(index).begin())
+    {
+        for (int i = 0; i < local_offset; ++i) {
+            entry_++;
+        }
+    }
+
+    iterator(hashtable & table, size_t index)
+            : t_(table),
+              index_(index),
+              entry_(table.bucket(index).begin())
+    {}
+
+    iterator(hashtable & table)
+            : t_(table),
+              index_(0),
+              entry_(table.bucket(0).begin()) // start of first bucket
+    {}
+
+    self_type operator++() { // prefix
+
+        if (  t_.bucket(index_).empty() )
+        {
+            do // look for non empty bucket
+            {
+                index_++; // advance to next bucket
+
+                if ( index_ == t_.bucket_count() ) // still no bucket found
+                    return t_.end();
+
+            } while ( t_.bucket(index_).empty() ); // current bucket is empty
+            entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+
+            return *this;
+        } else {
+            if ( ++entry_ != t_.bucket(index_).end() )
+            {
+                return *this;
+            } else {
+                do // look for non empty bucket
+                {
+                    index_++; // advance to next bucket
+
+                    if ( index_ == t_.bucket_count() ) // still no bucket found
+                        return t_.end();
+
+                } while ( t_.bucket(index_).empty() ); // current bucket is empty
+
+                entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+                return *this;
+            }
+        }
+    }
+
+    self_type operator++(int dummy) { // postfix
+        self_type it = *this; ++(*this); return it;
+    }
+
+    reference operator*() { return *entry_; }
+    bucket_iterator operator->() { return entry_; }
+
+    bool operator==(const self_type& rhs) { return entry_ == rhs.entry_; }
+    bool operator!=(const self_type& rhs) { return !(*this == rhs); }
+
+private:
+    hashtable &t_;
+    size_t index_;
+    bucket_iterator entry_;
+};
 #endif //MYREGEX_HASHTABLE_H
