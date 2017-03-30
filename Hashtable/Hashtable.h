@@ -38,11 +38,9 @@
  * TODO:
  *
  * - Implement operator=
- * - Implement operator[]
  *
  *
  * Iterator
- * - Implement operator--
  * - Implement constructor parameter validation to verify that
  * the index of the entry corresponds to the index passed
  *
@@ -119,14 +117,14 @@ public:
             table_.push_back( bucket_type(i) );
     }
 
-    virtual ~hashtable() {
+     ~hashtable() {
     }
 
-    virtual size_t size() const {
+     size_t size() const {
         return bucket_count_;
     }
 
-    virtual iterator insert(Key const key, T const& obj) {
+     iterator insert(Key key, T const& obj) {
 
         size_t index = h_(key);
         index %= bucket_count_;
@@ -143,7 +141,7 @@ public:
         return iterator( *this, index, b->size() - 1 );
     }
 
-    virtual iterator find(Key const& key) {
+     iterator find(Key key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -158,7 +156,7 @@ public:
         return this->end();
     }
 
-    virtual void erase(Key key) {
+     void erase(Key key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -168,7 +166,7 @@ public:
                 b->erase(it); // erase entry
     }
 
-    virtual bool contains_key(Key key) {
+     bool contains_key(Key key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -213,6 +211,25 @@ public:
      bucket_type& bucket(size_t index) {
          return table_[index];
     }
+
+    T& at(Key key) {
+        return find(key)->second;
+    }
+
+    T& operator[](Key key) {
+        return at(key);
+    }
+
+    bucket_type& at(size_t index) {
+        return table_[index];
+    }
+
+    bucket_type& operator[](size_t index) {
+        return at(index);
+    }
+
+
+
 
 
 };
