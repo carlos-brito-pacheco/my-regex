@@ -105,6 +105,7 @@ private:
     index_table table_;
     Hasher h_;
     const size_t bucket_count_;
+    size_t count_;
 
     // METHODS
 public:
@@ -136,7 +137,8 @@ public:
             if ( equal_to_( it->first, key ) )
                 return this->end();
 
-        b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
+         b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
+         count_++;
 
         return iterator( *this, index, b->size() - 1 );
     }
@@ -163,7 +165,11 @@ public:
         bucket_type *b = &table_[index];
         for (bucket_iterator it = b->begin(); it != b->end(); it++)
             if (equal_to_(key, it->first))
+            {
                 b->erase(it); // erase entry
+                count_--;
+            }
+
     }
 
      bool contains_key(Key key) {
@@ -228,9 +234,13 @@ public:
         return at(index);
     }
 
+    size_t count() {
+        return count_;
+    }
 
-
-
+    double load_factor() {
+        return count_/bucket_count_;
+    }
 
 };
 
