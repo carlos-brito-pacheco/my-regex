@@ -1,7 +1,7 @@
 //<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/23/17 Carlos Brito
+ *  Copyright (C) 3/30/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,43 +24,16 @@
  * Date: 3/22/17.
  *
  * Description:
- * Header file for the class NFA.
- *
- * This file defines the methods and attributes for a
- * non deterministic finite automaton.
- *
- * We keep a pointer to the start state as well as a
- * table for the states. We identify a state by a name key,
- * such as "s1" or "state3". It will be up to the user of the
- * class to keep track of the names he/she gives to the
- * states.
  *
  * TODO:
- *
- *
- *
+ * 
+ * 
+ * 
+ * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
-#ifndef MYREGEX_NFA_H
-#define MYREGEX_NFA_H
-
-#include "../Set/Set.h"
+#include "TransitionHasher.h"
 #include "State.h"
 
-class NFA {
-    State *start_state_;
-    Set<State, State::Hasher> *states_;
-
-public:
-    NFA(std::string start_state_name);
-    ~NFA();
-    void addState(std::string state_name);
-    void addTransition(State *source_state, State *destination_state, char symbol);
-
-
-};
-
-
-#endif //MYREGEX_NFA_H

@@ -7,11 +7,10 @@
 #define MYREGEX_DFA_H
 
 
-#include "../Hashtable/Hashtable.h"
+#include "../Hashtable/hashtable.h"
 
 class DFA {
 private:
-    Hashtable<char> *alphabet;
 };
 
 

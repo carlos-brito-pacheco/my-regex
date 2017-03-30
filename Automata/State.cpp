@@ -34,30 +34,37 @@
  */
 //</editor-fold>
 
-#include "Transition.h"
 #include "State.h"
+#include "Transition.h"
 
-State::State(string name)
+State::State(std::string name, size_t bucket_count)
         : name_(name),
           is_end(false)
 {
-
+    transitions_ = new Set<Transition,Transition::Hasher>(bucket_count);
 }
 
-string State::name() {
+std::string State::name() const {
     return name_;
 }
 
-bool State::isEnd() {
+bool State::isEnd() const {
     return is_end;
 }
 
 void State::addTransition(State *destination, char symbol) {
 
     Transition t(this, destination, symbol); // add transition from this state to destination
-    transitions_->push_back(t);
+    transitions_->insert(t);
 }
 
-
-
+class State::Hasher {
+    std::hash<std::string> h;
+public:
+    virtual size_t operator()(State state) const {
+        size_t hash = 0;
+        hash = h(state.name());
+        return hash;
+    }
+};
 

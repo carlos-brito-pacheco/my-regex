@@ -25,11 +25,23 @@
  *
  * Description:
  *
+ * This class models the behaviour of the state of a finite automata
+ * and assigns each one a name. A state is composed of:
  *
+ * - A name
+ * - A set of transitions (edges connecting to other states)
+ * - An attribute to indicate whether the state is final.
+ *
+ * We make the distinction that each state has a unique name. That is to
+ * say we take for granted that the state will have a name like:
+ * "s1"
+ * "state3"
+ * "whateveryouwant"
  *
  * TODO:
  * 
- * 
+ * - Instead of a vector<Transition>, we should probably use a set type
+ * of the form set<Transition>.
  * 
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -42,25 +54,32 @@
 #include <string>
 #include <vector>
 
-#include "../Hashtable/Hashtable.h"
+#include "../Set/Set.h"
 
-using namespace std;
+#include "Transition.h"
 
-class Transition; // forward declare: state and transition are codependent
-
+// DECLARATION
 class State {
-    string name_;
-    vector<Transition> *transitions_;
+
+    std::string name_; // this attribute must be unique to each state
+    Set<Transition, Transition::Hasher> *transitions_;
     bool is_end;
 
 public:
-    State(string name);
+    // Classes
+    class Hasher;
+
+    // Methods
+    State(std::string name, size_t bucket_count=100);
+
     void addTransition(State *destination, char symbol);
 
-    string name();
-    bool isEnd();
-
+    std::string name() const;
+    bool isEnd() const;
 };
 
+bool operator==(State const& lhs, State const& rhs) {
+    return lhs.name() == rhs.name();
+}
 
 #endif //MYREGEX_STATE_H

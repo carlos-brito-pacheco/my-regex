@@ -1,7 +1,7 @@
 //<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/23/17 Carlos Brito
+ *  Copyright (C) 3/30/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,43 +24,57 @@
  * Date: 3/22/17.
  *
  * Description:
- * Header file for the class NFA.
- *
- * This file defines the methods and attributes for a
- * non deterministic finite automaton.
- *
- * We keep a pointer to the start state as well as a
- * table for the states. We identify a state by a name key,
- * such as "s1" or "state3". It will be up to the user of the
- * class to keep track of the names he/she gives to the
- * states.
  *
  * TODO:
- *
- *
- *
+ * 
+ * 
+ * 
+ * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
-#ifndef MYREGEX_NFA_H
-#define MYREGEX_NFA_H
+#include <string>
 
-#include "../Set/Set.h"
+#include "Transition.h"
 #include "State.h"
 
-class NFA {
-    State *start_state_;
-    Set<State, State::Hasher> *states_;
+Transition::Transition(State *source, State *destination, char symbol)
+        : source_(source),
+          destination_(destination),
+          symbol_(symbol)
+{}
 
+char Transition::symbol() const {
+    return symbol_;
+}
+
+State* Transition::source() const{
+    return source_;
+}
+
+State* Transition::destination() const{
+    return destination_;
+}
+
+inline bool operator==(Transition const &lhs, Transition const &rhs) {
+
+    return lhs.source() == rhs.source() &&
+           lhs.destination() == rhs.destination() &&
+           lhs.symbol() == rhs.symbol();
+}
+
+
+class Transition::Hasher {
+    std::hash<std::string> h;
 public:
-    NFA(std::string start_state_name);
-    ~NFA();
-    void addState(std::string state_name);
-    void addTransition(State *source_state, State *destination_state, char symbol);
+    virtual size_t operator()(Transition transition) const {
+        size_t hash = 0;
+        std::string unique_name = transition.source()->name()
+                                  + std::string(1,transition.symbol())
+                                  + transition.destination()->name();
 
-
+        hash = h(unique_name);
+        return hash;
+    }
 };
-
-
-#endif //MYREGEX_NFA_H

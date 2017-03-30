@@ -45,33 +45,24 @@
 #ifndef MYREGEX_TRANSITION_H
 #define MYREGEX_TRANSITION_H
 
-class State;
+
+class State; // forward declare: state and transition are codependent
 
 class Transition {
-    char symbol_;
+    const char symbol_;
     State *source_;
     State *destination_;
 
 public:
-    Transition(State *source, State *destination, char symbol)
-            : source_(source),
-              destination_(destination),
-              symbol_(symbol)
-    {
-    }
+    // Classes
+    class Hasher;
 
-    char symbol() {
-        return symbol_;
-    }
+    // Methods
+    Transition(State *source, State *destination, char symbol);
 
-    State* source() {
-        return source_;
-    }
-
-    State* destination() {
-        return destination_;
-    }
+    char symbol() const;
+    State* source() const;
+    State* destination() const;
 };
-
 
 #endif //MYREGEX_TRANSITION_H
