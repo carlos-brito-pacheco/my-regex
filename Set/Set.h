@@ -86,7 +86,7 @@ public:
         return table_.contains_key(element);
     }
 
-    self_type Union( self_type &s ) {
+    self_type Union( self_type s ) {
         self_type result = *this;
         for (iterator it = s.begin(); it != s.end(); it++)
             result.insert(*it);
@@ -94,7 +94,7 @@ public:
         return result;
     }
 
-    self_type Intersection( self_type &s ) {
+    self_type Intersection( self_type s ) {
         self_type result(this->bucket_count());
         for (iterator it = s.begin(); it != s.end(); it++)
             if (this->contains(*it))
@@ -103,7 +103,7 @@ public:
         return result;
     }
 
-    self_type Difference( self_type &left ) {
+    self_type Difference( self_type left ) {
         self_type result = *this;
         for (iterator it = left.begin(); it != left.end(); it++)
             if ( this->contains(*it) )

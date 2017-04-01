@@ -130,7 +130,7 @@ public:
          b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
          count_++;
 
-        return iterator( *this, index, b->size() - 1 );
+        return iterator( *this, index, b->end() );
     }
 
      iterator find(Key key) {
@@ -138,12 +138,9 @@ public:
         index %= bucket_count_;
 
         bucket_type *b = &table_[index];
-        size_t offset = 0;
-        for (bucket_iterator it = b->begin(); it != b->end(); it++, offset++)
-            // iterate over bucket
-            if ( equal_to_( key, it->first ) )
-                // if we find key return iterator to it
-                return iterator( *this, index, offset );
+        for (bucket_iterator it = b->begin(); it != b->end(); it++) // iterate over bucket
+            if ( equal_to_( key, it->first ) ) // if we find key return iterator to it
+                return iterator( *this, index, it );
 
         return this->end();
     }
@@ -181,30 +178,30 @@ public:
     iterator begin()  {
         size_t index = 0;
 
-        while ( bucket(index).empty() )// current bucket is empty
+        while (at(index).empty() )// current at is empty
         {
             if ( index == bucket_count() - 1 )
-                return iterator( *this, index, bucket(bucket_count() - 1).end() ); // return end of last bucket
+                return iterator( *this, index, at(bucket_count() - 1).end() ); // return end of last bucket
 
             index++;
         }
-        return iterator(*this, index, 0 ); // return beginning of first non-empty bucket
+        return iterator(*this, index, at(index).begin() ); // return beginning of first non-empty bucket
     }
 
     iterator end()  {
         size_t index = bucket_count() - 1;
 
-        while ( bucket(index).empty() ) // current bucket is empty
+        while (at(index).empty() ) // current at is empty
         {
             if ( index == 0 )
-                return iterator( *this, index, bucket(bucket_count() - 1).end() ); // return end of last bucket
+                return iterator( *this, index, at(bucket_count() - 1).end() ); // return end of last bucket
 
             index--;
         }
-        return iterator( *this, index, bucket(index).end() ); // return end of first non-empty bucket
+        return iterator( *this, index, at(index).end() ); // return end of first non-empty bucket
     }
 
-     bucket_type& bucket(size_t index) {
+     bucket_type& at(size_t index) {
          return table_[index];
     }
 
@@ -214,10 +211,6 @@ public:
 
     T& operator[](Key key) {
         return at(key);
-    }
-
-    bucket_type& at(size_t index) {
-        return table_[index];
     }
 
     bucket_type& operator[](size_t index) {
@@ -266,31 +259,9 @@ public:
               entry_(entry)
     {}
 
-    iterator(hashtable& table, size_t index, size_t local_offset)
-            : t_(table),
-              index_(index),
-              entry_(table.bucket(index).begin())
-    {
-        for (int i = 0; i < local_offset; ++i) {
-            entry_++;
-        }
-    }
-
-    iterator(hashtable & table, size_t index)
-            : t_(table),
-              index_(index),
-              entry_(table.bucket(index).begin())
-    {}
-
-    iterator(hashtable & table)
-            : t_(table),
-              index_(0),
-              entry_(table.bucket(0).begin()) // start of first bucket
-    {}
-
     self_type operator++() { // prefix
 
-        if (  t_.bucket(index_).empty() )
+        if (t_.at(index_).empty() )
         {
             do // look for non empty bucket
             {
@@ -299,25 +270,25 @@ public:
                 if ( index_ == t_.bucket_count() ) // still no bucket found
                     return t_.end();
 
-            } while ( t_.bucket(index_).empty() ); // current bucket is empty
-            entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+            } while (t_.at(index_).empty() ); // current at is empty
+            entry_ = t_.at(index_).begin(); // return beginning of non-empty bucket
 
             return *this;
         } else {
-            if ( ++entry_ != t_.bucket(index_).end() )
+            if ( ++entry_ != t_.at(index_).end() )
             {
                 return *this;
             } else {
-                do // look for non empty bucket
+                do // look for non empty at
                 {
-                    index_++; // advance to next bucket
+                    index_++; // advance to next at
 
                     if ( index_ == t_.bucket_count() ) // still no bucket found
                         return t_.end();
 
-                } while ( t_.bucket(index_).empty() ); // current bucket is empty
+                } while (t_.at(index_).empty() ); // current bucket is empty
 
-                entry_ = t_.bucket(index_).begin(); // return beginning of non-empty bucket
+                entry_ = t_.at(index_).begin(); // return beginning of non-empty bucket
                 return *this;
             }
         }
