@@ -76,6 +76,9 @@ public:
     class iterator;
     friend class iterator;
 
+    // TYPEDEFS
+    typedef hashtable<Key,T,Hasher,KeyEqual> self_type;
+
     // TYPEDEFS STRUCTURES
     typedef typename std::pair<Key, T> hash_entry_type;
     typedef typename std::list<hash_entry_type> bucket_type;
@@ -90,7 +93,8 @@ public:
 public:
     hashtable(const size_t buckets)
             : bucket_count_(buckets),
-              equal_to_(KeyEqual())
+              equal_to_(KeyEqual()),
+              count_(0)
     {
         for (int i = 0; i < buckets; i++)
             table_.push_back( bucket_type() );
@@ -118,7 +122,7 @@ public:
          b->push_back( hash_entry_type(key, obj) ); // push to back of bucket
          count_++;
 
-        return iterator( *this, index, b->end() );
+        return iterator( *this, index, --(b->end()) );
     }
 
      iterator find(Key key) {
@@ -213,12 +217,25 @@ public:
         return count_/bucket_count_;
     }
 
+    self_type& operator=(self_type const& rhs) {
+        if (this != &rhs)
+        {
+            bucket_count_ = rhs.bucket_count_;
+            count_ = rhs.count_;
+            table_ = index_table( rhs.bucket_count_ ); // invalidate previous data, let the g.c. take care of it
+
+            std::copy(rhs.table_.begin(), rhs.table_.end(), table_.begin()); // copy data from rhs into this
+        }
+
+        return *this;
+    }
+
     // VARIABLES
 private:
     KeyEqual equal_to_ = KeyEqual();
     index_table table_;
     Hasher h_;
-    const size_t bucket_count_;
+    size_t bucket_count_;
     size_t count_;
 
 };
