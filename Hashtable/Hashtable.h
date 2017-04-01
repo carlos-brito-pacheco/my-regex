@@ -74,29 +74,17 @@ class hashtable {
 
 public:
     class iterator;
-    class bucket_type;
+    friend class iterator;
 
     // TYPEDEFS STRUCTURES
     typedef typename std::pair<Key, T> hash_entry_type;
+    typedef typename std::list<hash_entry_type> bucket_type;
     typedef typename std::vector<bucket_type> index_table;
+
 
     // TYPEDEFS ITERATORS
     typedef typename index_table::iterator index_iterator;
     typedef typename bucket_type::iterator bucket_iterator;
-
-    class bucket_type : public std::list<hash_entry_type> {
-        size_t index_;
-
-    public:
-        bucket_type(size_t index)
-                : index_(index)
-        {}
-
-        size_t index() { return index_; }
-    };
-
-    // ITERATOR CLASS
-    friend class iterator;
 
     // METHODS
 public:
@@ -105,7 +93,7 @@ public:
               equal_to_(KeyEqual())
     {
         for (int i = 0; i < buckets; i++)
-            table_.push_back( bucket_type(i) );
+            table_.push_back( bucket_type() );
     }
 
      ~hashtable() {
