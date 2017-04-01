@@ -37,9 +37,9 @@
 #include "State.h"
 #include "Transition.h"
 
-State::State(std::string name, size_t bucket_count)
+State::State(std::string name, bool is_end, size_t bucket_count)
         : name_(name),
-          is_end(false)
+          is_end(is_end)
 {
     transitions_ = new Set<Transition,Transition::Hasher>(bucket_count);
 }

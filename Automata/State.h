@@ -70,7 +70,7 @@ public:
     struct Hasher {
         std::hash<std::string> h;
     public:
-        virtual size_t operator()(State state) const {
+        size_t operator()(State state) const {
             size_t hash = 0;
             hash = h(state.name());
             return hash;
@@ -78,7 +78,7 @@ public:
     };
 
     // Methods
-    State(std::string name, size_t bucket_count=100);
+    State(std::string name, bool is_end=false, size_t bucket_count=100);
 
     void addTransition(State *destination, char symbol);
 
@@ -89,7 +89,7 @@ public:
         return *transitions_;
     }
 
-    transition_set_type ctransition_set() const{
+    transition_set_type const& ctransition_set() const{
         return *transitions_;
     }
 
