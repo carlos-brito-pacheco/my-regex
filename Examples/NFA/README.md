@@ -15,7 +15,7 @@ So let's say we want to build the NFA show in the figure.
 This NFA accepts languages given by the Regular Expression `(a|b)*abb`. 
 We could use the Regexp class. However, let's say we want to build it manually.
 
-## Creating NFA
+## Creating the NFA
 
 We first start by creating the NFA
 
@@ -23,7 +23,7 @@ We first start by creating the NFA
 NFA nfa("0"); // NFA(std::string start_state_name)
 ````
 
-This creates an NFA with an state named `0` as our entry state.
+This creates a NFA with an state named `0` as our entry state.
 
 ## Adding states
 Next we have to add all the states
@@ -38,7 +38,7 @@ nfa.addState("10");
 
 ````
 
-Note: If we try to add an state with a non-existing name then it 
+Note: If we try to add a state with a non-existing name then it 
 will throw an exception.
 
 ## Adding transitions
