@@ -2,7 +2,7 @@
 The NFA interface has three most utilized methods which we will be using:
 
 ````cpp
-void addState(std::string state_name, bool is_end=false)
+void addState(std::string state_name, bool is_end=false);
 void addTransition(std::string source_name, std::string destination_name, char symbol);
 bool match(std::string x);
 ````
@@ -38,9 +38,6 @@ nfa.addState("10");
 
 ````
 
-Note: If we try to add a state with a non-existing name then it 
-will throw an exception.
-
 ## Adding transitions
 Now we have to add the transition from state to state.
 
@@ -60,6 +57,9 @@ nfa.addTransition("3", "6", nfa.epsilon);
 ````
 The epsilon character is accessed via `nfa.epsilon` or `NFA::epsilon`.
 It is of type `char`.
+
+Note: If we try to add a state with a non-existing name then it 
+will throw an exception.
 
 ## Matching a string
 Finally we want to match a string against the NFA. For this we employ
