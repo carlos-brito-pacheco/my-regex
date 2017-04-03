@@ -1,5 +1,5 @@
 # Interface
-The NFA interface has three most utilized methods:
+The NFA interface has three most utilized methods which we will be using:
 
 ````cpp
 void addState(std::string state_name, bool is_end=false)
@@ -8,12 +8,12 @@ bool match(std::string x);
 ````
 
 # Building the NFA
-So let's say we want to build the NFA show in the figure.
+So let's say we want to build the NFA shown in the figure.
 
 ![alt text](ExampleAutomata.png)
 
 This NFA accepts languages given by the Regular Expression `(a|b)*abb`. 
-We could use the Regexp class. However, let's say we want to build it manually.
+We could use the Regexp class but let's say we want to build it manually.
 
 ## Creating the NFA
 
@@ -23,7 +23,7 @@ We first start by creating the NFA
 NFA nfa("0"); // NFA(std::string start_state_name)
 ````
 
-This creates a NFA with an state named `0` as our entry state.
+This creates a NFA with a state named `0` as our entry state.
 
 ## Adding states
 Next we have to add all the states
