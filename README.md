@@ -1,6 +1,9 @@
 # Description
 Regular expression parser. This will be a part of a compiler for a small language.
 
+# How-to use
+Please see the Examples/ directory for examples on how to use the code. Each subfolder will have an explanation.
+
 # Notes on Building
 This project is coded using C++11 syntax. This should be set in CMakeLists.txt if using CMake with the flag
 
