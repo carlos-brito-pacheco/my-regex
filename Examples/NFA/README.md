@@ -34,7 +34,7 @@ nfa.addState("3");
 nfa.addState("4");
 nfa.addState("5");
 ...
-nfa.addState("10");
+nfa.addState("10", true);
 
 ````
 
