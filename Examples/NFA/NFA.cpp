@@ -3,6 +3,7 @@
 #include "Automata/NFA.h"
 
 using namespace std;
+using namespace Automata;
 
 int main() {
     NFA nfa("0");

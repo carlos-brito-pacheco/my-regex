@@ -17,10 +17,16 @@ We could use the Regexp class but let's say we want to build it manually.
 
 ## Creating the NFA
 
-We first start by creating the NFA
+We first start by creating the NFA. All of our objects are under the namespace `Automata`.
+So if we want to access the NFA class we have to use `Automata::NFA`. However,
+for this example we simply just remove this condition by using the namespace.
 
 ````cpp
-NFA nfa("0"); // NFA(std::string start_state_name)
+using namespace Automata;
+
+...
+
+NFA nfa("0"); // Declaration of the NFA with initial state "0"
 ````
 
 This creates a NFA with a state named `0` as our entry state.
