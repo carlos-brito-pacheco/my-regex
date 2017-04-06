@@ -29,7 +29,7 @@
  * and has an attribute tag to indicate which "class" the token
  * belongs to. A representation could be this:
  *
- * Token<TokenTag> token(relop, "<=");
+ * Token token(relop, "<=");
  *
  * TODO:
  *
@@ -42,46 +42,73 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include "TokenTag.h"
 #include <string>
 
-using namespace std;
+namespace Regexp {
 
-class Token {
-private:
-    const TokenTag tag_;
-    const string lexeme_;
-    const size_t length_;
+    class Token {
+        // Tag is a class of Token
+        class Tag;
 
-public:
-    Token(TokenTag tag, string l);
+    private:
+        const Tag tag_;
+        const std::string lexeme_;
+        const size_t length_;
 
-    TokenTag tag() const;
-    string lexeme() const;
-    size_t length() const;
+    public:
+        Token(Tag tag, std::string l)
+                : tag_(tag),
+                  lexeme_(l),
+                  length_(l.length())
+        {}
 
-    bool operator==(Token const& rhs);
+        // Returns tag of token
+        Tag tag() {
+            return tag_;
+        }
 
-};
+        // Returns lexeme of token
+        std::string lexeme() {
+            return lexeme_;
+        }
 
-Token::Token(TokenTag tag, string lexeme)
-        : tag_(tag),
-          lexeme_(lexeme),
-          length_( lexeme.length() )
-{
+        // Returns length of token
+        size_t length() {
+            return length_;
+        }
+
+    };
+
+    class Token::Tag {
+        const int id_; // unique id to identify the which class a token belongs to (this is the id of the tag, not the token)
+        const std::string name_;
+
+    public:
+        Tag(int id, std::string name)
+                : id_(id),
+                  name_(name)
+        {}
+
+        int id() {
+            return id_;
+        }
+
+        std::string name() {
+            return name_;
+        }
+
+        bool operator==(Tag const& rhs) {
+            return id_ == rhs.id_;
+        }
+
+        bool operator!=(Tag const& rhs) {
+            return !(*this == rhs);
+        }
+    };
 }
 
-string Token::lexeme() const {
-    return lexeme_;
+friend std::ostream& operator<<(std::ostream& os, Regexp::Token::Tag const& obj) {
+    return os << obj.name();
 }
-
-size_t Token::length() const {
-    return length_;
-}
-
-TokenTag Token::tag() const {
-    return tag_;
-}
-
 
 #endif //TOKEN_H
