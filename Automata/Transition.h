@@ -47,54 +47,60 @@
 
 #include <string>
 
-class State; // forward declare: state and transition are codependent
+namespace Automata {
 
-class Transition {
-public:
-    // Classes
-    struct Hasher {
-        std::hash<std::string> h;
+    class State; // forward declare: state and transition are codependent
+
+    class Transition {
     public:
-        size_t operator()(Transition transition) const {
-            size_t hash = 0;
-            std::string unique_name = transition.source_name_
-                                      + std::string(1, transition.symbol())
-                                      + transition.destination_name_;
+        // Classes
+        struct Hasher {
+            std::hash<std::string> h;
+        public:
+            size_t operator()(Transition transition) const {
+                size_t hash = 0;
+                std::string unique_name = transition.source_name_
+                                          + std::string(1, transition.symbol())
+                                          + transition.destination_name_;
 
-            hash = h(unique_name);
-            return hash;
-        }
+                hash = h(unique_name);
+                return hash;
+            }
+        };
+
+        // Methods
+        Transition(State *source, State *destination, char symbol);
+
+        char symbol() const;
+
+        State *source() const;
+
+        State *destination() const;
+
+    private:
+        const char symbol_;
+        State *source_;
+        State *destination_;
+
+
+        /*
+         * NOTE:
+         * A note on the following two variables.
+         * We should be able to access the names using the pointers defined above.
+         * However, we need the definition of State in Hasher. Because they are
+         * codependent, this means we won't be able to access the names.
+         * Instead, AS A WORKAROUND, we store them directly.
+         */
+        std::string source_name_;
+        std::string destination_name_;
     };
 
-    // Methods
-    Transition(State *source, State *destination, char symbol);
+    inline bool operator==(Transition const &lhs, Transition const &rhs) {
 
-    char symbol() const;
-    State* source() const;
-    State* destination() const;
+        return lhs.source() == rhs.source() &&
+               lhs.destination() == rhs.destination() &&
+               lhs.symbol() == rhs.symbol();
+    }
 
-private:
-    const char symbol_;
-    State *source_;
-    State *destination_;
-
-
-    /*
-     * NOTE:
-     * A note on the following two variables.
-     * We should be able to access the names using the pointers defined above.
-     * However, we need the definition of State in Hasher. Because they are
-     * codependent, this means we won't be able to access the names.
-     * Instead, AS A WORKAROUND, we store them directly.
-     */
-    std::string source_name_;
-    std::string destination_name_;
-};
-
-inline bool operator==(Transition const &lhs, Transition const &rhs) {
-
-    return lhs.source() == rhs.source() &&
-           lhs.destination() == rhs.destination() &&
-           lhs.symbol() == rhs.symbol();
 }
 #endif //MYREGEX_TRANSITION_H

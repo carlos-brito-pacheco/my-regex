@@ -38,27 +38,28 @@
 
 #include "State.h"
 
-Transition::Transition(State *source, State *destination, char symbol)
-        : source_(source),
-          destination_(destination),
-          symbol_(symbol),
-          source_name_(source->name()),
-          destination_name_(source->name())
-{}
+namespace Automata {
 
-char Transition::symbol() const {
-    return symbol_;
-}
+    Transition::Transition(State *source, State *destination, char symbol)
+            : source_(source),
+              destination_(destination),
+              symbol_(symbol),
+              source_name_(source->name()),
+              destination_name_(source->name()) {}
 
-State* Transition::source() const{
-    return source_;
-}
+    char Transition::symbol() const {
+        return symbol_;
+    }
 
-State* Transition::destination() const{
-    return destination_;
-}
+    State *Transition::source() const {
+        return source_;
+    }
 
-std::ostream& operator<<(std::ostream& os, const State& obj)
-{
-    return os << obj.name();
+    State *Transition::destination() const {
+        return destination_;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const State &obj) {
+        return os << obj.name();
+    }
 }

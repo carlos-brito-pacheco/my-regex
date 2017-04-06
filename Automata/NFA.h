@@ -41,7 +41,10 @@
  *
  * Compilers: Principles, Techniques and Tools (Aho et Al.)
  *
- * For more details on automata
+ *
+ *
+ *
+ *
  *
  * TODO:
  *
@@ -56,51 +59,57 @@
 
 #include "State.h"
 #include "../Hashtable/Hashtable.h"
+namespace Automata {
 
-class NFA {
-public:
-    // TYPEDEFS
-    typedef hashtable<std::string, State> state_table_type;
-    typedef Set<State, State::Hasher> state_set_type;
-
-
-    // MEMBER FUNCTIONS
-
-    NFA(std::string start_state_name);
-    ~NFA();
-
-    // modifiers
-    void addState(std::string state_name, bool is_end=false);
-    void addTransition(State *source_state, State *destination_state, char symbol); // do not use
-    void addTransition(std::string source_name, std::string destination_name, char symbol);
-
-    // lookup
-    State getState(std::string name);
-    state_table_type table();
-    state_table_type const& ctable() const;
-
-    // operations
-    /*
-     * The following methods are implemented according to the
-     * algorithms in the book:
-     * Compilers: Principles, Techniques and Tools (Aho et Al.)
-     * Section 3.7.1 From Regular Expressions to Automata
-     */
-    state_set_type epsilon_closure(State s); // set of states reachable from state s
-    state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T
-    state_set_type move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T
-    bool match(std::string x);
-
-    // VARIABLES
-    static const char epsilon = '\x08';
-
-private:
-    // VARIABLES
-    state_table_type *state_table_;
-    State *start_state_;
-
-    state_set_type *end_states_;
-};
+    class NFA {
+    public:
+        // TYPEDEFS
+        typedef hashtable<std::string, State> state_table_type;
+        typedef Set<State, State::Hasher> state_set_type;
 
 
+        // MEMBER FUNCTIONS
+
+        NFA(std::string start_state_name);
+
+        ~NFA();
+
+        // modifiers
+        void addState(std::string state_name, bool is_end = false);
+
+        void addTransition(State *source_state, State *destination_state, char symbol); // do not use
+        void addTransition(std::string source_name, std::string destination_name, char symbol);
+
+        // lookup
+        State getState(std::string name);
+
+        state_table_type table();
+
+        state_table_type const &ctable() const;
+
+        // operations
+        /*
+         * The following methods are implemented according to the
+         * algorithms in the book:
+         * Compilers: Principles, Techniques and Tools (Aho et Al.)
+         * Section 3.7.1 From Regular Expressions to Automata
+         */
+        state_set_type epsilon_closure(State s); // set of states reachable from state s
+        state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T
+        state_set_type
+        move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T
+        bool match(std::string x);
+
+        // VARIABLES
+        static const char epsilon = '\x08';
+
+    private:
+        // VARIABLES
+        state_table_type *state_table_;
+        State *start_state_;
+
+        state_set_type *end_states_;
+    };
+
+}
 #endif //MYREGEX_NFA_H

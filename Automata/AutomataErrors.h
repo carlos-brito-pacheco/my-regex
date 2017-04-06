@@ -41,24 +41,25 @@
 #include <string>
 #include "Transition.h"
 
-using namespace std;
+namespace Automata {
+    class StateNotFoundError : public std::exception {
+        std::string message_;
 
-class StateNotFoundError : public exception {
-    string message_;
+    public:
+        StateNotFoundError(std::string name) {
+            message_ = "State " + name + " not found!";
+        }
 
-public:
-    StateNotFoundError(string name) {
-        message_ = "State " + name + " not found!";
-    }
+        ~StateNotFoundError() throw() {
 
-    ~StateNotFoundError() throw() {
+        }
 
-    }
+        virtual const char *what() const throw() {
 
-    virtual const char *what() const throw() {
+            return message_.c_str();
+        }
+    };
+}
 
-        return message_.c_str();
-    }
-};
 
 #endif //MYREGEX_AUTOMATAERRORS_H

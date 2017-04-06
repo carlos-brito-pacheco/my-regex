@@ -37,23 +37,25 @@
 #include "State.h"
 #include "Transition.h"
 
-State::State(std::string name, bool is_end, size_t bucket_count)
-        : name_(name),
-          is_end(is_end)
-{
-    transitions_ = new Set<Transition,Transition::Hasher>(bucket_count);
-}
+namespace Automata {
 
-std::string State::name() const {
-    return name_;
-}
+    State::State(std::string name, bool is_end, size_t bucket_count)
+            : name_(name),
+              is_end(is_end) {
+        transitions_ = new Set<Transition, Transition::Hasher>(bucket_count);
+    }
 
-bool State::isEnd() const {
-    return is_end;
-}
+    std::string State::name() const {
+        return name_;
+    }
 
-void State::addTransition(State *destination, char symbol) {
+    bool State::isEnd() const {
+        return is_end;
+    }
 
-    Transition t(this, destination, symbol); // add transition from this state to destination
-    transitions_->insert(t);
+    void State::addTransition(State *destination, char symbol) {
+
+        Transition t(this, destination, symbol); // add transition from this state to destination
+        transitions_->insert(t);
+    }
 }

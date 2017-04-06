@@ -59,50 +59,53 @@
 
 #include "Transition.h"
 
+namespace Automata {
+
 // DECLARATION
-class State {
+    class State {
 
-public:
-    // TYPEDEFS
-    typedef Set<Transition, Transition::Hasher> transition_set_type;
-
-    // Classes
-    struct Hasher {
-        std::hash<std::string> h;
     public:
-        size_t operator()(State state) const {
-            size_t hash = 0;
-            hash = h(state.name());
-            return hash;
+        // TYPEDEFS
+        typedef Set<Transition, Transition::Hasher> transition_set_type;
+
+        // Classes
+        struct Hasher {
+            std::hash<std::string> h;
+        public:
+            size_t operator()(State state) const {
+                size_t hash = 0;
+                hash = h(state.name());
+                return hash;
+            }
+        };
+
+        // Methods
+        State(std::string name, bool is_end = false, size_t bucket_count = 100);
+
+        void addTransition(State *destination, char symbol);
+
+        std::string name() const;
+
+        bool isEnd() const;
+
+        transition_set_type &transition_set() {
+            return *transitions_;
         }
+
+        transition_set_type const &ctransition_set() const {
+            return *transitions_;
+        }
+
+    private:
+        std::string name_; // this attribute must be unique to each state
+        transition_set_type *transitions_;
+        bool is_end;
     };
 
-    // Methods
-    State(std::string name, bool is_end=false, size_t bucket_count=100);
+    std::ostream &operator<<(std::ostream &os, const State &obj);
 
-    void addTransition(State *destination, char symbol);
-
-    std::string name() const;
-    bool isEnd() const;
-
-    transition_set_type& transition_set() {
-        return *transitions_;
+    inline bool operator==(State const &lhs, State const &rhs) {
+        return lhs.name() == rhs.name();
     }
-
-    transition_set_type const& ctransition_set() const{
-        return *transitions_;
-    }
-
-private:
-    std::string name_; // this attribute must be unique to each state
-    transition_set_type *transitions_;
-    bool is_end;
-};
-
-std::ostream& operator<<(std::ostream& os, const State& obj);
-
-inline bool operator==(State const& lhs, State const& rhs) {
-    return lhs.name() == rhs.name();
 }
-
 #endif //MYREGEX_STATE_H
