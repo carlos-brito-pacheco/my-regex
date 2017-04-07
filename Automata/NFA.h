@@ -76,13 +76,16 @@ namespace Automata {
 
         // modifiers
         void addState(std::string state_name, bool is_end = false);
+        void addState(State s);
+
+        void connect(NFA const &nfa, std::string from, std::string to, char symbol);
 
         void addTransition(State *source_state, State *destination_state, char symbol); // do not use
         void addTransition(std::string source_name, std::string destination_name, char symbol);
 
         // lookup
-        State getState(std::string name);
-
+        State* getState(std::string name) const;
+        State* initialState() const;
         state_table_type table();
 
         state_table_type const &ctable() const;
@@ -109,6 +112,8 @@ namespace Automata {
         State *start_state_;
 
         state_set_type *end_states_;
+
+        std::string str_to_match;
     };
 
 }

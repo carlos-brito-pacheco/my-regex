@@ -124,8 +124,13 @@ namespace Automata {
         return result;
     }
 
-    State NFA::getState(std::string name) {
-        State s = state_table_->find(name)->second;
+    State* NFA::getState(std::string name) const {
+        state_table_type::iterator it = state_table_->find(name);
+
+        if (it == state_table_->end())
+            throw StateNotFoundError(name);
+
+        State *s = &(it->second);
         return s;
     }
 
@@ -159,6 +164,22 @@ namespace Automata {
         }
 
         return (S.Intersection(*end_states_)).empty();
+    }
+
+    State* NFA::initialState() const {
+        return start_state_;
+    }
+
+    void NFA::addState(State s) {
+        state_table_->insert(s.name(), s);
+    }
+
+    void NFA::connect(NFA const &nfa, std::string from, std::string to, char symbol) {
+
+        State *s1 = this->getState(from);
+
+        State *s2 = nfa.getState(to);
+        addTransition(s1, s2, symbol);
     }
 }
 
