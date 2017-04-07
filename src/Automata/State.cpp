@@ -1,7 +1,7 @@
 //<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/23/17 Carlos Brito
+ *  Copyright (C) 3/24/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  * Description:
  *
  * TODO:
- *
+ * 
  * 
  * 
  * 
@@ -34,28 +34,32 @@
  */
 //</editor-fold>
 
-#include <cstring>
+#include "State.h"
+#include "Transition.h"
 
-#include "Lexer.h"
-#include "RegexpTokens.h"
+namespace Automata {
 
-
-
-RegexpLexer::RegexpLexer(string source)
-        : source_(source),
-          current_position_(0)
-{
-}
-
-Token RegexpLexer::getNextToken() {
-
-    const char* source = source_.c_str();
-    size_t len = source_.length();
-
-    while(match().tag() != NONE.tag())
-    {
-
+    State::State(std::string name, bool is_end, size_t bucket_count)
+            : name_(name),
+              is_end_(is_end) {
+        transitions_ = new Set<Transition, Transition::Hasher>(bucket_count);
     }
 
-    return NONE;
+    std::string State::name() const {
+        return name_;
+    }
+
+    bool State::isEnd() const {
+        return is_end_;
+    }
+
+    void State::addTransition(State *destination, char symbol) {
+
+        Transition t(this, destination, symbol); // add transition from this state to destination
+        transitions_->insert(t);
+    }
+
+    void State::setEnd(bool is_end) {
+        is_end_ = is_end;
+    }
 }

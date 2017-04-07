@@ -1,7 +1,7 @@
-//<editor-fold desc="Preamble">
+//<editor-fold desc="License">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/24/17 Carlos Brito
+ *  Copyright (C) 3/22/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,42 +24,45 @@
  * Date: 3/22/17.
  *
  * Description:
+ * This is the header file of the class Regexp.
+ * This contains all the definitions of its functions
+ * and provides insight to its behaviour.
  *
  * TODO:
- * 
- * 
- * 
- * 
+ * - Add support for testing equivalence between regexp
+ * (this problem is known to be PSPACE-complete so it isn't trivial to implement)
+ *
+ * -
+ *
+ *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
-#ifndef MYREGEX_AUTOMATAERRORS_H
-#define MYREGEX_AUTOMATAERRORS_H
+#ifndef MYREGEX_REGEXP_H
+#define MYREGEX_REGEXP_H
 
-#include <exception>
 #include <string>
-#include "Transition.h"
+#include <set>
+#include "../Hashtable/Hashtable.h"
+#include "RegexpOperator.h"
 
-namespace Automata {
-    class StateNotFoundError : public std::exception {
-        std::string message_;
+using namespace std;
 
-    public:
-        StateNotFoundError(std::string name) {
-            message_ = "State " + name + " not found!";
-        }
+class Regexp {
+    static Hashtable<string> *operator_set_;
+    string regexp_;
+    string postfix_;
 
-        ~StateNotFoundError() throw() {
+public:
+    Regexp(string regexp);
+    string toPostfix();
+    string regexp();
+private:
+    bool isoperator(char op);
 
-        }
-
-        virtual const char *what() const throw() {
-
-            return message_.c_str();
-        }
-    };
-}
+    friend ostream& operator<<(ostream& os, Regexp const& regexp);
+};
 
 
-#endif //MYREGEX_AUTOMATAERRORS_H
+#endif //MYREGEX_REGEXP_H

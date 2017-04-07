@@ -1,7 +1,7 @@
 //<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/24/17 Carlos Brito
+ *  Copyright (C) 3/23/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,15 @@
  *
  * Description:
  *
+ * This lexer is meant to obtain tokens from a regular expression string.
+ * The variable symbol set is a hashtable where all the reserved symbols
+ * (like the alternation token "|") are stored.
+ *
+ * Strictly speaking, we should also keep an "alphabet" but we just take it
+ * as everything we can type on a keyboard minus the symbol set.
+ *
  * TODO:
- * 
+ *
  * 
  * 
  * 
@@ -34,28 +41,33 @@
  */
 //</editor-fold>
 
-#include "State.h"
-#include "Transition.h"
+#ifndef MYREGEX_LEXER_H
+#define MYREGEX_LEXER_H
 
-namespace Automata {
+#include "../Hashtable/Hashtable.h"
+#include "Token.h"
 
-    State::State(std::string name, bool is_end, size_t bucket_count)
-            : name_(name),
-              is_end(is_end) {
-        transitions_ = new Set<Transition, Transition::Hasher>(bucket_count);
-    }
+#include <string>
 
-    std::string State::name() const {
-        return name_;
-    }
+namespace Regexp {
 
-    bool State::isEnd() const {
-        return is_end;
-    }
+    class Lexer {
+        std::string source_;
+        size_t current_position_;
+        char lookahead_;
 
-    void State::addTransition(State *destination, char symbol) {
+    public:
+        Lexer(std::string source);
 
-        Transition t(this, destination, symbol); // add transition from this state to destination
-        transitions_->insert(t);
-    }
+        Token nextToken();
+    private:
+        Token match();
+        char nextChar();
+
+    private:
+
+    };
 }
+
+
+#endif //MYREGEX_LEXER_H

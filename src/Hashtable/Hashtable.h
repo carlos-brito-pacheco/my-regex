@@ -54,12 +54,7 @@
 #ifndef MYREGEX_HASHTABLE_H
 #define MYREGEX_HASHTABLE_H
 
-#include <iostream>
 #include <string>
-#include <list>
-#include <array>
-#include <functional>
-#include <memory>
 #include <vector>
 #include <list>
 

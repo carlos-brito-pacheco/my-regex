@@ -49,7 +49,7 @@
 #define MYREGEX_SET_H
 
 #include <functional>
-#include "../Hashtable/hashtable.h"
+#include "../Hashtable/Hashtable.h"
 
 template <
         class Key,
@@ -126,6 +126,10 @@ public:
 
     size_t bucket_count() {
         return table_.bucket_count();
+    }
+
+    bool empty() {
+        return count() > 0;
     }
 
     // VARIABLES

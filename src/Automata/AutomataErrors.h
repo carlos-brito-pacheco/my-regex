@@ -1,7 +1,7 @@
-//<editor-fold desc="License">
+//<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/22/17 Carlos Brito
+ *  Copyright (C) 3/24/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,45 +24,61 @@
  * Date: 3/22/17.
  *
  * Description:
- * This is the header file of the class Regexp.
- * This contains all the definitions of its functions
- * and provides insight to its behaviour.
  *
  * TODO:
- * - Add support for testing equivalence between regexp
- * (this problem is known to be PSPACE-complete so it isn't trivial to implement)
- *
- * -
- *
- *
+ * 
+ * 
+ * 
+ * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
 
-#ifndef MYREGEX_REGEXP_H
-#define MYREGEX_REGEXP_H
+#ifndef MYREGEX_AUTOMATAERRORS_H
+#define MYREGEX_AUTOMATAERRORS_H
 
+#include <exception>
 #include <string>
-#include <set>
-#include "../Hashtable/Hashtable.h"
-#include "RegexpOperator.h"
+#include "Transition.h"
 
-using namespace std;
+namespace Automata {
+    class StateNotFoundError : public std::exception {
+        std::string message_;
 
-class Regexp {
-    static Hashtable<RegexpOperator> *operator_set_;
-    string regexp_;
-    string postfix_;
+    public:
+        StateNotFoundError(std::string name) {
+            message_ = "State " + name + " not found!";
+        }
 
-public:
-    Regexp(string regexp);
-    string toPostfix();
-    string regexp();
-private:
-    bool isoperator(char op);
+        ~StateNotFoundError() throw() {
 
-    friend ostream& operator<<(ostream& os, Regexp const& regexp);
-};
+        }
+
+        virtual const char *what() const throw() {
+
+            return message_.c_str();
+        }
+    };
+
+    class OutOfBoundsError : public std::exception {
+        std::string message_;
+
+    public:
+        OutOfBoundsError(std::string str) {
+            message_ = "Out of bounds error while advancing to next character in string: " + str;
+        }
+
+        ~OutOfBoundsError() throw() {
+
+        }
+
+        virtual const char *what() const throw() {
+
+            return message_.c_str();
+        }
+    };
+
+}
 
 
-#endif //MYREGEX_REGEXP_H
+#endif //MYREGEX_AUTOMATAERRORS_H

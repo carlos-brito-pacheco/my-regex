@@ -47,8 +47,38 @@
 namespace Regexp {
 
     class Token {
-        // Tag is a class of Token
-        class Tag;
+    public:
+        // TAG CLASS
+        class Tag {
+            const int id_; // unique id to identify the which class a token belongs to (this is the id of the tag, not the token)
+            const std::string name_;
+
+        public:
+            Tag(int id, std::string name)
+                    : id_(id),
+                      name_(name)
+            {}
+
+            const int id() const{
+                return id_;
+            }
+
+            const std::string name() const {
+                return name_;
+            }
+
+            bool operator==(Tag const& rhs) {
+                return id_ == rhs.id_;
+            }
+
+            bool operator!=(Tag const& rhs) {
+                return !(*this == rhs);
+            }
+
+            friend std::ostream& operator<<(std::ostream& os, Tag const& obj) {
+                return os << obj.name();
+            }
+        };
 
     private:
         const Tag tag_;
@@ -63,52 +93,25 @@ namespace Regexp {
         {}
 
         // Returns tag of token
-        Tag tag() {
+        const Tag tag() const {
             return tag_;
         }
 
         // Returns lexeme of token
-        std::string lexeme() {
+        const std::string lexeme() const {
             return lexeme_;
         }
 
         // Returns length of token
-        size_t length() {
+        const size_t length() const {
             return length_;
         }
 
+        const char first() const {
+            return lexeme_[0];
+        }
+
     };
-
-    class Token::Tag {
-        const int id_; // unique id to identify the which class a token belongs to (this is the id of the tag, not the token)
-        const std::string name_;
-
-    public:
-        Tag(int id, std::string name)
-                : id_(id),
-                  name_(name)
-        {}
-
-        int id() {
-            return id_;
-        }
-
-        std::string name() {
-            return name_;
-        }
-
-        bool operator==(Tag const& rhs) {
-            return id_ == rhs.id_;
-        }
-
-        bool operator!=(Tag const& rhs) {
-            return !(*this == rhs);
-        }
-    };
-}
-
-friend std::ostream& operator<<(std::ostream& os, Regexp::Token::Tag const& obj) {
-    return os << obj.name();
 }
 
 #endif //TOKEN_H

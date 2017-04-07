@@ -25,13 +25,6 @@
  *
  * Description:
  *
- * This lexer is meant to obtain tokens from a regular expression string.
- * The variable symbol set is a hashtable where all the reserved symbols
- * (like the alternation token "|") are stored.
- *
- * Strictly speaking, we should also keep an "alphabet" but we just take it
- * as everything we can type on a keyboard minus the symbol set.
- *
  * TODO:
  *
  * 
@@ -41,40 +34,55 @@
  */
 //</editor-fold>
 
-#ifndef MYREGEX_REGEXPLEXER_H
-#define MYREGEX_REGEXPLEXER_H
+#include <iostream>
+#include "Lexer.h"
+#include "TokenDecls.h"
 
-#include "../Hashtable/Hashtable.h"
-#include "Token.h"
-#include "TokenTag.h"
+namespace Regexp {
 
-#include <string>
-using namespace std;
+    Lexer::Lexer(std::string source)
+            : source_(source),
+              current_position_(0),
+              lookahead_(source[0])
+    {}
 
-class RegexpLexer {
-    static Hashtable<Token> symbol_set_;
-    string source_;
-    int current_position_;
+    Token Lexer::nextToken() {
 
-public:
-    RegexpLexer(string source);
-    Token getNextToken();
+        switch ( source_[current_position_] )
+        {
 
-private:
-    Token match();
+            case ( '(' ): // LEFT PARENTHESES
+            std::cout << "yay!" << std::endl;
+                return LPAREN;
 
-    Token matchChar();
-    Token matchKleene();
-    Token matchAltern();
-    Token matchLParen();
-    Token matchRParen();
-    Token matchConcat();
-    Token matchQMark();
-    Token matchEscapeSequence();
+            case ( ')' ): // RIGHT PARENTHESES
+                return RPAREN;
 
-private:
+            case ( '*' ): // KLEENE STAR
+                return KLEENE_STAR;
 
-};
+            case ( '|' ): // ALTERNATION
+                return ALTER;
+
+            case ( '&' ): // CONCATENATION
+                return CONCAT;
+
+            case ( '?' ): //
+                return QMARK;
+
+            case ( 'e' ):
+                return T_EOF;
+
+            default:
+                // THROW ERROR
+                break;
+        }
+
+        current_position_ += 1;
+
+        return NONE;
+    }
 
 
-#endif //MYREGEX_REGEXPLEXER_H
+
+}

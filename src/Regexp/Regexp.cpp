@@ -104,7 +104,8 @@ string Regexp::toPostfix() {
         if ( token != '(' && token != ')' && isoperator(token) )
             // if token is operator then....
         {
-            RegexpOperator op1 = operator_set_->get(""+token); // get operator from token
+            RegexpOperator op1 = *operator_set_->get(""+token); // get operator from token
+
             while ( !operator_stack.empty() && operator_stack.top().c_op() != '(' )
             {
                 RegexpOperator op2 = operator_stack.top(); // get operator from stack
@@ -123,7 +124,7 @@ string Regexp::toPostfix() {
         if (token == '(')
             // if token is left paren then push to stack
         {
-            RegexpOperator lparen = operator_set_->get(""+'(');
+            RegexpOperator lparen = *operator_set_->get(""+'(');
             operator_stack.push(lparen);
         }
 

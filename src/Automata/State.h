@@ -84,6 +84,8 @@ namespace Automata {
 
         void addTransition(State *destination, char symbol);
 
+        void setEnd(bool is_end);
+
         std::string name() const;
 
         bool isEnd() const;
@@ -99,7 +101,7 @@ namespace Automata {
     private:
         std::string name_; // this attribute must be unique to each state
         transition_set_type *transitions_;
-        bool is_end;
+        bool is_end_;
     };
 
     std::ostream &operator<<(std::ostream &os, const State &obj);
