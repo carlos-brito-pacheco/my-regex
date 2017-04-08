@@ -1,4 +1,4 @@
-# Interface
+# Basic Automata
 The NFA interface has three most utilized methods which we will be using:
 
 ````cpp

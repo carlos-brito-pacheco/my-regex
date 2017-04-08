@@ -19,5 +19,5 @@ set(SOURCE_FILES
         src/Automata/Transition.h
         src/Set/Set.h
         src/Automata/AutomataErrors.h
-        src/Automata/Transition.cpp CommonNFA.h)
+        src/Automata/Transition.cpp)
 add_executable(MyRegex ${SOURCE_FILES})
