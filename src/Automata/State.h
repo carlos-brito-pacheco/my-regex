@@ -85,6 +85,7 @@ namespace Automata {
         void addTransition(State *destination, char symbol);
 
         void setEnd(bool is_end);
+        void setName(std::string name);
 
         std::string name() const;
 

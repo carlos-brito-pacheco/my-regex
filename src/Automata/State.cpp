@@ -62,4 +62,8 @@ namespace Automata {
     void State::setEnd(bool is_end) {
         is_end_ = is_end;
     }
+
+    void State::setName(std::string name) {
+        name_ = name;
+    }
 }
