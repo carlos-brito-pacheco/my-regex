@@ -23,10 +23,10 @@
  * Author: Carlos Brito (carlos.brito524@gmail.com)
  * Date: 3/22/17.
  *
- * @brief: Header file for the class NFA. This class models the behaviour of a Non-Deterministic Finite Automaton
+ * Header file for the class NFA. This class models the behaviour of a Non-Deterministic Finite Automaton
  *
- * This file defines the methods and attributes for a
- * non deterministic finite automaton.
+ * # Description
+ * This file defines the methods and attributes for a non deterministic finite automaton.
  *
  * We keep a pointer to the start state as well as a
  * table for the states. We identify a state by a name key,
@@ -37,7 +37,6 @@
  * with their names >>>
  *
  * Please see the book:
- *
  * Compilers: Principles, Techniques and Tools (Aho et Al.)
  *
  *
@@ -50,7 +49,7 @@
  * state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T
  * state_set_type move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T
  *
- * TODO:
+ * # TODO
  *
  *
  *
@@ -66,25 +65,17 @@ namespace Automata {
 
     class NFA {
     public:
-        /// @defgroup TYPEDEFS TYPEDEFS
-        /// @{
         typedef hashtable<std::string, State> state_table_type;
         typedef Set<State, State::Hasher> state_set_type;
-        /// @}
 
-        /// @defgroup CONSTRUCTORS CONSTRUCTORS
-        /// @{
-        NFA(std::string start_state_name);
+        NFA(std::string start_state_name, size_t bucket_count=100);
         ~NFA();
-        /// @}
 
-        /// @defgroup MODIFIERS MODIFIERS
-        /// @{
         /// Adds a state to the NFA
         /**
          *
-         * @param state_name - Name of state to be added. Must be unique.
-         * @param is_end - true if state is end state, false otherwise
+         * @param state_name Name of state to be added. Must be unique.
+         * @param is_end true if state is end state, false otherwise
          *
          * # Implementation details
          * This method adds a state to the NFA by inserting it in the state table.
@@ -96,7 +87,7 @@ namespace Automata {
         /// Adds a state to the NFA
         /**
          *
-         * @param s - state to add
+         * @param s state to add
          *
          * # Implementation details
          * This method adds an already constructed state to the NFA
@@ -106,9 +97,9 @@ namespace Automata {
         /// Add transition from one state to other
         /**
          *
-         * @param from - Pointer to state from where the transition begins
-         * @param to  - Pointer to state where the transition ends
-         * @param symbol - Character symbol required to make the transition
+         * @param from Pointer to state from where the transition begins
+         * @param to  Pointer to state where the transition ends
+         * @param symbol Character symbol required to make the transition
          */
         void addTransition(State *from, State *to, char symbol);
 
@@ -117,21 +108,20 @@ namespace Automata {
          * States can be identified by their name, so you can actually add
          * transitions based on the names.
          *
-         * @param from - Name of the state from where the transition begins
-         * @param to - Name of the state to where the transition ends
-         * @param symbol - Character symbol required to make the transition
+         * @param from Name of the state from where the transition begins
+         * @param to Name of the state to where the transition ends
+         * @param symbol Character symbol required to make the transition
          */
         void addTransition(std::string from, std::string to, char symbol);
-        ///@}
 
-        void concatenate(NFA const &to_nfa); //! this function is not finished
+        /// Concatenates two automatas (NOT FINISHED)
+        NFA concatenate(NFA const &to_nfa, std::string start="0", std::string end="1") const;
 
-        // STRING MATCHING
         /// Sets the string to parse
         /**
          * This method sets the string to parse. We can then use advance() to advance
          * to the next set of states the automaton is at.
-         * @param str - String to parse
+         * @param str String to parse
          */
         void setString(std::string str);
 
@@ -166,13 +156,10 @@ namespace Automata {
          */
         bool accepts();
 
-        /// @defgroup LOOKUP LOOKUP
-        /// @{
-
         /// Returns a pointer to the state identified by its name
         /**
          *
-         * @param name - Name of state
+         * @param name Name of state
          * @return a pointer to the state
          */
         State* getState(std::string name);
@@ -194,18 +181,26 @@ namespace Automata {
          * @return the table of states
          */
         state_table_type table();
-        /// @}
 
-        /// @defgroup OPERATIONS OPERATIONS
-        /// @{
+        /// Returns a const reference of the table of states
+        /**
+         * This table type is of `NFA::state_table_type` so in case one would want to
+         * access the table you simply have to do:
+         *
+         * `NFA::state_table_type table = nfa.ctable()`
+         *
+         * @return the table of states
+         */
+        const state_table_type & ctable() const;
+
 
         /// Returns the epsilon closure of state s
         /**
          * Formally, this method returns the epsilon closure of state s.
          * In other words, it returns the set of states reachable from state s
          * on an epsilon transition (i.e. transition with epsilon as its symbol)
-         * @param s - State s
-         * @return - set of states reachable from state s on epsilon transition
+         * @param s State s
+         * @return set of states reachable from state s on epsilon transition
          */
         state_set_type epsilon_closure(State s);
 
@@ -213,7 +208,7 @@ namespace Automata {
         /**
          * In other words, this will return the union of epsilon closures for
          * each state s in T
-         * @param T - Set of states
+         * @param T Set of states
          * @return union of epsilon closure for each state s in T
          */
         state_set_type epsilon_closure(state_set_type T);
@@ -222,8 +217,8 @@ namespace Automata {
         /**
          * Formally, it returns a set of states to which there is a transition on symbol c from
          * some state s in T
-         * @param T - Set of states
-         * @param c - Symbol of transition
+         * @param T Set of states
+         * @param c Symbol of transition
          * @return a set of states to which there is a transition on symbol c from
          * some state s in T
          */
@@ -232,12 +227,11 @@ namespace Automata {
         /// Returns true if the string matches the nfa pattern
         /**
          * Note: It does not modify anything.
-         * @param x - String to match
+         * @param x String to match
          * @return true if string matches pattern, false otherwise
          */
         bool match(std::string x);
 
-        /// @}
 
         // VARIABLES
         static const char epsilon = '\x08';
