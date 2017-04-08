@@ -18,10 +18,10 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/**
+/** @file NFA.cpp
  *
- * @author: Carlos Brito (carlos.brito524@gmail.com)
- * @date: 3/22/17.
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
  *
  * # Description
  * CPP file for the class NFA declared in NFA.h

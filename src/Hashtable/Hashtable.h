@@ -19,15 +19,16 @@
 
 //<editor-fold desc="Description">
 /**
+ * @file Hashtable.h
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
  *
- * @author: Carlos Brito (carlos.brito524@gmail.com)
- * @date: 3/22/17.
+ * This header file has been compiled for C++11.
  *
+ * @class hashtable
  * # Description
  *
  * This is a class implementing a hashtable à la STL.
- *
- * This header file has been compiled for C++11.
  *
  * We have to note that the default value for the Hasher is to utilize
  * `std::hash` which overloads `operator()` and has a result of type `size_t`

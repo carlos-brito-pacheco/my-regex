@@ -19,10 +19,12 @@
 
 //<editor-fold desc="Description">
 /**
+ * @file Set.h
  * # Details
  * Author: Carlos Brito (carlos.brito524@gmail.com)
  * Date: 3/22/17.
  *
+ * @class Set
  * # Description
  * This header file contains the class declarations and definitions for Set.
  *

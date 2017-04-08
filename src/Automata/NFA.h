@@ -18,13 +18,13 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/**
- *
+/** @file NFA.h
  * @author Carlos Brito (carlos.brito524@gmail.com)
- * @date: 3/22/17.
+ * @date 3/22/17.
  *
  * Header file for the class NFA. This class models the behaviour of a Non-Deterministic Finite Automaton
  *
+ * @class NFA
  * # Description
  * This file defines the methods and attributes for a non deterministic finite automaton.
  *
@@ -294,7 +294,8 @@ namespace Automata {
 
         /// We take the convention that the escape character '\x08' represents epsilon
         static const char epsilon = '\x08';
-        static int id_ = 0;
+
+        static int id_;
 
     private:
 
