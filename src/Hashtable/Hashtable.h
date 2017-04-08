@@ -142,8 +142,8 @@ public:
      * @return an iterator pointing to the object, if object isn't found then return `end()`
      *
      * # Complexity
-     * - Average O(1)
-     * - Worst O(n)
+     * - Average \f$ O(1) \f$
+     * - Worst \f$ O(n) \f$
      */
      iterator find(Key const& key) {
         size_t index = h_(key);
@@ -167,8 +167,8 @@ public:
      * @param key key of object
      * @return a const iterator pointing to the object, if object isn't found then return cend()
      *
-     * - Average O(1)
-     * - Worst O(n)
+     * - Average \f$ O(1) \f$
+     * - Worst \f$ O(n) \f$
      */
     const_iterator find(Key const& key) const {
         size_t index = h_(key);

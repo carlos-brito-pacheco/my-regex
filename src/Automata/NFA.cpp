@@ -45,7 +45,7 @@ namespace Automata {
               end_states_(state_set_type(bucket_count)),
               S_(state_set_type(1)) {
         addState(start_state_name); // add initial state
-        start_state_ = &(state_table_.find(start_state_name)->second); // find the address of the initial state
+        start_state_ = &(getState(start_state_name)); // find the address of the initial state
     }
 
     NFA::~NFA() {
@@ -57,6 +57,9 @@ namespace Automata {
     }
 
     void NFA::addState(State s) {
+        if (state_table_.contains_key(s.name()))
+            throw DuplicateStateError(s.name());
+
         if (s.isEnd())
             end_states_.insert(s);
 
@@ -68,30 +71,19 @@ namespace Automata {
     }
 
     void NFA::addTransition(std::string from, std::string to, char symbol) {
-
-        // Get elements
-        state_table_type::iterator src = state_table_.find(from);
-        state_table_type::iterator dst = state_table_.find(to);
-
-        // Handle exceptions
-        if (src == state_table_.end())
-            throw StateNotFoundError(from);
-        if (dst == state_table_.end())
-            throw StateNotFoundError(to);
+        // get elements
+        State *source = getState(from);
+        State *destination = getState(to);
 
         // add transition
-        State *source, *destination;
-        source = &src->second;
-        destination = &dst->second;
-
         addTransition(source, destination, symbol);
     }
 
-    NFA::state_table_type NFA::table() {
+    NFA::state_table_type & NFA::table() {
         return state_table_;
     }
 
-    const NFA::state_table_type &NFA::ctable() const {
+    const NFA::state_table_type &NFA::table() const {
         return state_table_;
     }
 
@@ -201,7 +193,6 @@ namespace Automata {
     NFA NFA::concatenate(NFA const &to_nfa, std::string start, std::string end) const {
 
         // Declaration of automata
-
         NFA result(start, // initial state with name start
                    this->state_table_.bucket_count() +
                    to_nfa.state_table_.bucket_count()); // maximum size to reduce load factor of hashtable
@@ -231,7 +222,6 @@ namespace Automata {
                 result.addTransition(t.source()->name(), t.destination()->name(), t.symbol());
             }
         }
-
 
         // Copy states of this automata
         State *init_state_other = to_nfa.initialState();
@@ -263,6 +253,14 @@ namespace Automata {
         result.addTransition(result.initialState()->name(), this_init_state->name(), epsilon);
 
         return result;
+    }
+
+    NFA::state_set_type &NFA::end_states() {
+        return end_states_;
+    }
+
+    const NFA::state_set_type &NFA::end_states() const {
+        return end_states_;
     }
 }
 

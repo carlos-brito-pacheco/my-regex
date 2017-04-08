@@ -20,8 +20,8 @@
 //<editor-fold desc="Description">
 /**
  *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date: 3/22/17.
  *
  * Header file for the class NFA. This class models the behaviour of a Non-Deterministic Finite Automaton
  *
@@ -33,8 +33,8 @@
  * such as "s1" or "state3". It will be up to the user of the
  * class to keep track of the names he/she gives to the
  * states.
- * <<< This means that we have to make references to the states
- * with their names >>>
+ * This means that we have to make references to the states
+ * with their names
  *
  * Please see the book:
  * Compilers: Principles, Techniques and Tools (Aho et Al.)
@@ -45,13 +45,16 @@
  * Compilers: Principles, Techniques and Tools (Aho et Al.)
  * Section 3.7.1 From Regular Expressions to Automata:
  *
- * state_set_type epsilon_closure(State s); // set of states reachable from state s
- * state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T
- * state_set_type move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T
+ * - `state_set_type epsilon_closure(State s); // set of states reachable from state s`
+ * - `state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T`
+ * - `state_set_type move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T`
  *
  * # TODO
+ * - Implement some mechanism to avoid duplicate states when merging two sets of states.
+ * This happens a lot when we use methods such as `concatenate()`, which merges two sets
+ * of states from different automatas.
  *
- *
+ * - Implement method for the union of two automatas
  *
  */
 //</editor-fold>
@@ -61,6 +64,8 @@
 
 #include "State.h"
 #include "../Hashtable/Hashtable.h"
+
+
 namespace Automata {
 
     class NFA {
@@ -68,7 +73,21 @@ namespace Automata {
         typedef hashtable<std::string, State> state_table_type;
         typedef Set<State, State::Hasher> state_set_type;
 
+        /// Instantiates the NFA with a starting state name
+        /**
+         * This constructor will instantiate the NFA given the name of the start state.
+         * It also takes the number of buckets which regulates whether the internal
+         * access to the elements will be \f$ O(1) \f$ or not.
+         *
+         * If the number of states is known beforehand, then you should set bucket count
+         * to be equal to the number of states.
+         *
+         * @param start_state_name
+         * @param bucket_count
+         */
         NFA(std::string start_state_name, size_t bucket_count=100);
+
+        /// Destructor method for NFA
         ~NFA();
 
         /// Adds a state to the NFA
@@ -114,7 +133,33 @@ namespace Automata {
          */
         void addTransition(std::string from, std::string to, char symbol);
 
-        /// Concatenates two automatas (NOT FINISHED)
+        /// Concatenates two automatas
+        /**
+         * This method returns an automata that is the concatenation of both
+         * automatas. It merges the sets of states and creates a new set of
+         * states as well as it copies the transitions.
+         *
+         * Formally, if \f$ A \f$ and \f$ B \f$ are two NFAs which have respective languages
+         * \f$ L(A) \f$ and \f$L(B)\f$ then this method returns a NFA \f$ C = AB \f$ which accepts
+         * the language \f$ L(A)L(B) \f$.
+         *
+         * # Implementation Details
+         *
+         * The automata will merge both sets of states using their respective keys.
+         * This means that if we have two states with equal names in both \f$A\f$ and \f$B\f$,
+         * this will generate a collision and throw an exception.
+         *
+         * # Complexity
+         * Worst case \f$ O(n^2 + m^2) \f$
+         * Where:
+         * - \f$ n \f$ is the number of states in \f$ A \f$
+         * - \f$ m \f$ is the number of states in \f$ B \f$
+         *
+         * @param to_nfa Right side automata. (Aka. the automata B)
+         * @param start Name of the start state
+         * @param end Name of the end state
+         * @return The concatenation of two NFAs
+         */
         NFA concatenate(NFA const &to_nfa, std::string start="0", std::string end="1") const;
 
         /// Sets the string to parse
@@ -180,7 +225,7 @@ namespace Automata {
          *
          * @return the table of states
          */
-        state_table_type table();
+        state_table_type & table();
 
         /// Returns a const reference of the table of states
         /**
@@ -191,7 +236,21 @@ namespace Automata {
          *
          * @return the table of states
          */
-        const state_table_type & ctable() const;
+        const state_table_type & table() const;
+
+        /// Returns a reference to the set of end states of the automata
+        /**
+         *
+         * @return End states
+         */
+        state_set_type & end_states();
+
+        /// Returns a const reference to the set of end states of the automata
+        /**
+         *
+         * @return End states
+         */
+        const state_set_type & end_states() const;
 
 
         /// Returns the epsilon closure of state s
@@ -233,19 +292,20 @@ namespace Automata {
         bool match(std::string x);
 
 
-        // VARIABLES
+        /// We take the convention that the escape character '\x08' represents epsilon
         static const char epsilon = '\x08';
+        static int id_ = 0;
 
     private:
-        // VARIABLES
 
-        //! Containers
+        //! Table of states
         state_table_type state_table_;
+
+        //! Set of end states
         state_set_type end_states_;
 
         //! Pointer to start state
         State *start_state_;
-
 
         //! String to match
         std::string str_to_match;
