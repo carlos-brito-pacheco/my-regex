@@ -78,6 +78,24 @@ namespace Automata {
         }
     };
 
+    class DuplicateStateError : public std::exception {
+        std::string message_;
+
+    public:
+        DuplicateStateError(std::string name) {
+            message_ = "Duplicate state with name: " + name;
+        }
+
+        ~DuplicateStateError() throw() {
+
+        }
+
+        virtual const char *what() const throw() {
+
+            return message_.c_str();
+        }
+    };
+
 }
 
 
