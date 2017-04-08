@@ -59,11 +59,14 @@ template <
 class Set {
     typedef Set<Key, Hasher, KeyEqual> self_type;
     typedef typename hashtable<Key, Key&, Hasher, KeyEqual>::iterator hashtable_iterator;
+    typedef typename hashtable<Key, Key&, Hasher, KeyEqual>::const_iterator const_hashtable_iterator;
 
 public:
     class iterator;
     friend class iterator;
 
+    class const_iterator;
+    friend class iterator;
 
 public:
     Set (size_t bucket_count)
@@ -78,6 +81,10 @@ public:
         return iterator( table_.find(element) );
     }
 
+    const_iterator find( Key element ) const {
+        return const_iterator( table_.find(element) );
+    }
+
     void remove( Key element ) {
         return table_.erase(element);
     }
@@ -86,26 +93,26 @@ public:
         return table_.contains_key(element);
     }
 
-    self_type Union( self_type s ) {
+    self_type Union( self_type const& s ) {
         self_type result = *this;
-        for (iterator it = s.begin(); it != s.end(); it++)
+        for (const_iterator it = s.cbegin(); it != s.cend(); it++)
             result.insert(*it);
 
         return result;
     }
 
-    self_type Intersection( self_type s ) {
+    self_type Intersection( self_type const& s ) {
         self_type result(this->bucket_count());
-        for (iterator it = s.begin(); it != s.end(); it++)
+        for (const_iterator it = s.cbegin(); it != s.cend(); it++)
             if (this->contains(*it))
                 result.insert(*it);
 
         return result;
     }
 
-    self_type Difference( self_type left ) {
+    self_type Difference( self_type const& left ) {
         self_type result = *this;
-        for (iterator it = left.begin(); it != left.end(); it++)
+        for (const_iterator it = left.cbegin(); it != left.cend(); it++)
             if ( this->contains(*it) )
                 result.remove(*it);
 
@@ -118,6 +125,14 @@ public:
 
     iterator end() {
         return iterator(table_.end());
+    }
+
+    const_iterator cbegin() const {
+        return const_iterator(table_.cbegin());
+    }
+
+    const_iterator cend() const {
+        return const_iterator(table_.cend());
     }
 
     size_t count() {
@@ -142,7 +157,6 @@ template <class Key, class Hasher, class KeyEqual>
 class Set<Key, Hasher, KeyEqual>::iterator {
 public:
     typedef iterator self_type;
-    typedef std::forward_iterator_tag iterator_category;
     typedef int difference_type;
     typedef Key& reference;
     typedef Key value_type;
@@ -170,5 +184,35 @@ private:
     hashtable_iterator hash_it_;
 };
 
+template <class Key, class Hasher, class KeyEqual>
+class Set<Key, Hasher, KeyEqual>::const_iterator {
+public:
+    typedef const_iterator self_type;
+    typedef int difference_type;
+    typedef Key& reference;
+    typedef Key value_type;
+    typedef Key* pointer;
+
+    const_iterator(const_hashtable_iterator const& hashtable_it)
+            : hash_it_(hashtable_it)
+    {}
+
+    self_type operator++() { // prefix
+        hash_it_++;
+    }
+
+    self_type operator++(int dummy) { // postfix
+        self_type it = *this; ++(*this); return it;
+    }
+
+    const value_type& operator*() { return hash_it_->first; }
+    const pointer operator->() { return &(hash_it_->first); }
+
+    bool operator==(const self_type& rhs) { return hash_it_ == rhs.hash_it_; }
+    bool operator!=(const self_type& rhs) { return !(*this == rhs); }
+
+private:
+    const_hashtable_iterator hash_it_;
+};
 
 #endif //MYREGEX_SET_H
