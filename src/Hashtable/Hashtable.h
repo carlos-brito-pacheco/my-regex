@@ -18,24 +18,24 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
  *
- * Description:
+ * @author: Carlos Brito (carlos.brito524@gmail.com)
+ * @date: 3/22/17.
+ *
+ * # Description
  *
  * This is a class implementing a hashtable à la STL.
  *
  * This header file has been compiled for C++11.
  *
  * We have to note that the default value for the Hasher is to utilize
- * std::hash which overloads  operator() and has a result of type size_t
+ * `std::hash` which overloads `operator()` and has a result of type `size_t`
  *
- * For insertion of an hash_entry of type T, we expect that the object class
- * for T has an appropiate and well behaved copy constructor.
+ * For insertion of an hash_entry of type `T`, we expect that the object class
+ * for `T` has an appropiate and well behaved copy constructor.
  *
- * TODO:
+ * # TODO
  *
  * - Implement operator=
  * - Implement const_iterator
@@ -47,7 +47,7 @@
  *
  *
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  */
 //</editor-fold>
 
@@ -102,11 +102,18 @@ public:
      ~hashtable() {
     }
 
-     size_t size() const {
-        return bucket_count_;
-    }
-
-     iterator insert(Key key, T const& obj) {
+    /// Inserts an element using its key into hashtable
+    /**
+     *
+     * @param key key of object
+     * @param obj object
+     * @return iterator pointing to the inserted object
+     *
+     * # Complexity
+     * - Average O(1)
+     * - Worst O(n)
+     */
+     iterator insert(Key const& key, T const& obj) {
 
         size_t index = h_(key);
         index %= bucket_count_;
@@ -124,7 +131,21 @@ public:
         return iterator( *this, index, --(b->end()) );
     }
 
-     iterator find(Key key) {
+
+    /// Finds an element in the hashtable
+    /**
+     * This method returns an iterator pointing to the requested object.
+     * If the specified key does not belong to an object the it will
+     * return end()
+     *
+     * @param key key of object to find
+     * @return an iterator pointing to the object, if object isn't found then return `end()`
+     *
+     * # Complexity
+     * - Average O(1)
+     * - Worst O(n)
+     */
+     iterator find(Key const& key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -136,7 +157,20 @@ public:
         return this->end();
     }
 
-    const_iterator find(Key key) const {
+    /// Finds an element in the hashtable
+    /**
+     * This is a const overload of the function `find(Key key)`.
+     * It returns a const iterator pointing to the requested object.
+     * In the given case the specified key does not belong to an object, then
+     * it will return `cend()`.
+     *
+     * @param key key of object
+     * @return a const iterator pointing to the object, if object isn't found then return cend()
+     *
+     * - Average O(1)
+     * - Worst O(n)
+     */
+    const_iterator find(Key const& key) const {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -148,7 +182,12 @@ public:
         return this->cend();
     }
 
-     void erase(Key key) {
+    /// Erases an object by its key
+    /**
+     * It the specified key isn't found then it has no effect
+     * @param key key of object
+     */
+     void erase(Key const& key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -159,10 +198,18 @@ public:
                 b->erase(it); // erase entry
                 count_--;
             }
-
     }
 
-     bool contains_key(Key key) {
+    /// Returns true if the key is found in the hashtable
+    /**
+     * This method looks to see if a specified key is in the
+     * hashtable.
+     * If the key is found, then return true.
+     * If the key isn't found, then return false.
+     * @param key key of object
+     * @return true if key is found, false otherwise
+     */
+     bool contains_key(Key const& key) {
         size_t index = h_(key);
         index %= bucket_count_;
 
@@ -174,10 +221,17 @@ public:
         return false;
     }
 
+    /// Returns the number of buckets in the hashtable
     size_t bucket_count() const {
         return bucket_count_;
     }
 
+
+    /// Returns an iterator pointing to the first element of the table
+    /**
+     * If no elements are in the hashtable, then it will return `end()`
+     * @return iterator pointing to the first element
+     */
     iterator begin()  {
         size_t index = 0;
 
@@ -191,6 +245,12 @@ public:
         return iterator(*this, index, at(index).begin() ); // return beginning of first non-empty bucket
     }
 
+    /// Returns an iterator pointing to the end of the hashtable
+    /**
+     * The end of the hashtable is defined as being one position after
+     * the last element.
+     * @return end of hashtable
+     */
     iterator end()  {
         size_t index = bucket_count() - 1;
 
@@ -204,6 +264,7 @@ public:
         return iterator( *this, index, at(index).end() ); // return end of first non-empty bucket
     }
 
+    /// Returns a const iterator the beginning of hashtable. See `begin()`.
     const_iterator cbegin()  const{
         size_t index = 0;
 
@@ -217,6 +278,7 @@ public:
         return const_iterator(*this, index, at(index).begin() ); // return beginning of first non-empty bucket
     }
 
+    /// Returns a const iterator to the end of hashtable. See `end()`.
     const_iterator cend() const {
         size_t index = bucket_count() - 1;
 
@@ -230,46 +292,69 @@ public:
         return const_iterator( *this, index, at(index).end() ); // return end of first non-empty bucket
     }
 
+    /// Returns a reference to the specified bucket at index
     bucket_type& at(size_t index) {
          return table_.at(index);
     }
 
+    /// Returns a const reference to the specified bucket at index
     const bucket_type& at(size_t index) const {
         return table_.at(index);
     }
 
-    T& at(Key key) {
+    /// Returns a reference to the object with the specified key
+    T& at(Key const& key) {
         return find(key)->second;
     }
 
-    const T& at(Key key) const {
+    /// Returns a const reference to the object with the specified key
+    const T& at(Key const& key) const {
         return find(key)->second;
     }
 
-    T& operator[](Key key) {
+    /// Returns a reference to the object with the specified key
+    T& operator[](Key const& key) {
         return at(key);
     }
 
+    /// Returns a reference to the specified bucket at index
     bucket_type& operator[](size_t index) {
         return at(index);
     }
 
-    const T& operator[](Key key) const {
+    /// Returns a const reference to the object with the specified key
+    const T& operator[](Key const& key) const {
         return at(key);
     }
 
+    /// Returns a const reference to the specified bucket at index
     const bucket_type& operator[](size_t index) const {
         return at(index);
     }
 
+    /// Returns the object count in the hashtable
     size_t count() {
         return count_;
     }
 
+    /// Returns the load factor of the hashtable
+    /**
+     * This value is calculated as follows:
+     * $n/k$
+     *
+     * Where:
+     * $n$ is the number of objects in the hashtable
+     * $k$ is the number of buckets in the hashtable
+     * @return
+     */
     double load_factor() {
         return count_/bucket_count_;
     }
 
+    /// Overload of the operator `=`
+    /**
+     * This operation overwrites the left hand side completely.
+     */
     self_type& operator=(self_type const& rhs) {
         if (this != &rhs)
         {
@@ -279,7 +364,6 @@ public:
 
             std::copy(rhs.table_.begin(), rhs.table_.end(), table_.begin()); // copy data from rhs into this
         }
-
         return *this;
     }
 
