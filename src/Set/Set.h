@@ -24,23 +24,11 @@
  * Author: Carlos Brito (carlos.brito524@gmail.com)
  * Date: 3/22/17.
  *
- * @class Set
- * # Description
- * This header file contains the class declarations and definitions for Set.
- *
- * The class models the behaviour and notion of a set. The main methods are:
- *
- * ( Assuming an element access has average complexity of O(1) )
- *
- * - Union ===  O(n)
- * - Intersection === O(n)
- * - Difference === O(n)
+ * @brief This header file contains the class declarations and definitions for Set.
  *
  * # TODO
  * - Implement operator=
  * - Implement bool SubsetOf(self_type left)
- * 
- * 
  *
  */
 //</editor-fold>
@@ -51,6 +39,16 @@
 #include <functional>
 #include "../Hashtable/Hashtable.h"
 
+/** @class Set
+* # Description
+* The class models the behaviour and notion of a set. The main methods are:
+*
+* ( Assuming an element access has average complexity of O(1) )
+*
+* - Union ===  \f$ O(n) \f$
+* - Intersection === \f$ O(n) \f$
+* - Difference === \f$ O(n) \f$
+*/
 template <
         class Key,
         class Hasher = std::hash<Key>,
@@ -69,6 +67,66 @@ public:
     /// Const iterator class
     class const_iterator;
     friend class iterator;
+
+    class iterator {
+    public:
+        typedef iterator self_type;
+        typedef int difference_type;
+        typedef Key& reference;
+        typedef Key value_type;
+        typedef Key* pointer;
+
+        iterator(hashtable_iterator const& hashtable_it)
+                : hash_it_(hashtable_it)
+        {}
+
+        self_type operator++() { // prefix
+            hash_it_++;
+        }
+
+        self_type operator++(int dummy) { // postfix
+            self_type it = *this; ++(*this); return it;
+        }
+
+        reference operator*() { return hash_it_->first; }
+        pointer operator->() { return &(hash_it_->first); }
+
+        bool operator==(const self_type& rhs) { return hash_it_ == rhs.hash_it_; }
+        bool operator!=(const self_type& rhs) { return !(*this == rhs); }
+
+    private:
+        hashtable_iterator hash_it_;
+    };
+
+    class const_iterator {
+    public:
+        typedef const_iterator self_type;
+        typedef int difference_type;
+        typedef Key& reference;
+        typedef Key value_type;
+        typedef Key* pointer;
+
+        const_iterator(const_hashtable_iterator const& hashtable_it)
+                : hash_it_(hashtable_it)
+        {}
+
+        self_type operator++() { // prefix
+            hash_it_++;
+        }
+
+        self_type operator++(int dummy) { // postfix
+            self_type it = *this; ++(*this); return it;
+        }
+
+        const value_type& operator*() { return hash_it_->first; }
+        const pointer operator->() { return &(hash_it_->first); }
+
+        bool operator==(const self_type& rhs) { return hash_it_ == rhs.hash_it_; }
+        bool operator!=(const self_type& rhs) { return !(*this == rhs); }
+
+    private:
+        const_hashtable_iterator hash_it_;
+    };
 
 public:
     Set (size_t bucket_count)
@@ -101,36 +159,38 @@ public:
         return table_.contains_key(element);
     }
 
-    /// Returns the union of the set with another set s
+    /// Returns the union of the set with another set \f$ S \f$
     /**
-     *
-     * @param s second set
+     * # Complexity
+     * \f$ O(n + m) \f$ where \f$ n \f$ and \f$ m \f$ are both sets' respective sizes
+     * @param S second set
      * @return union of both sets
      */
-    self_type Union( self_type const& s ) {
+    self_type Union( self_type const& S ) {
         self_type result = *this;
-        for (const_iterator it = s.cbegin(); it != s.cend(); it++)
+        for (const_iterator it = S.cbegin(); it != S.cend(); it++)
             result.insert(*it);
 
         return result;
     }
 
-    /// Returns the intersection of the set with another set s
+    /// Returns the intersection of the set with another set \f$ S \f$
     /**
-     *
-     * @param s second set
+     * # Complexity
+     * \f$ O(n) \f$ where \f$ n \f$ is the number of elements in set \f$ S \f$
+     * @param S second set
      * @return intersection of both sets
      */
-    self_type Intersection( self_type const& s ) {
+    self_type Intersection( self_type const& S ) {
         self_type result(this->bucket_count());
-        for (const_iterator it = s.cbegin(); it != s.cend(); it++)
+        for (const_iterator it = S.cbegin(); it != S.cend(); it++)
             if (this->contains(*it))
                 result.insert(*it);
 
         return result;
     }
 
-    /// Returns the difference of the set with another set s
+    /// Returns the difference of the set with another set \f$ S \f$
     /**
      *
      * @param right the right operand of the difference
@@ -184,68 +244,6 @@ public:
 private:
     size_t bucket_count_;
     hashtable<Key, Key&, Hasher, KeyEqual> table_;
-};
-
-template <class Key, class Hasher, class KeyEqual>
-class Set<Key, Hasher, KeyEqual>::iterator {
-public:
-    typedef iterator self_type;
-    typedef int difference_type;
-    typedef Key& reference;
-    typedef Key value_type;
-    typedef Key* pointer;
-
-    iterator(hashtable_iterator const& hashtable_it)
-            : hash_it_(hashtable_it)
-    {}
-
-    self_type operator++() { // prefix
-        hash_it_++;
-    }
-
-    self_type operator++(int dummy) { // postfix
-        self_type it = *this; ++(*this); return it;
-    }
-
-    reference operator*() { return hash_it_->first; }
-    pointer operator->() { return &(hash_it_->first); }
-
-    bool operator==(const self_type& rhs) { return hash_it_ == rhs.hash_it_; }
-    bool operator!=(const self_type& rhs) { return !(*this == rhs); }
-
-private:
-    hashtable_iterator hash_it_;
-};
-
-template <class Key, class Hasher, class KeyEqual>
-class Set<Key, Hasher, KeyEqual>::const_iterator {
-public:
-    typedef const_iterator self_type;
-    typedef int difference_type;
-    typedef Key& reference;
-    typedef Key value_type;
-    typedef Key* pointer;
-
-    const_iterator(const_hashtable_iterator const& hashtable_it)
-            : hash_it_(hashtable_it)
-    {}
-
-    self_type operator++() { // prefix
-        hash_it_++;
-    }
-
-    self_type operator++(int dummy) { // postfix
-        self_type it = *this; ++(*this); return it;
-    }
-
-    const value_type& operator*() { return hash_it_->first; }
-    const pointer operator->() { return &(hash_it_->first); }
-
-    bool operator==(const self_type& rhs) { return hash_it_ == rhs.hash_it_; }
-    bool operator!=(const self_type& rhs) { return !(*this == rhs); }
-
-private:
-    const_hashtable_iterator hash_it_;
 };
 
 #endif //MYREGEX_SET_H
