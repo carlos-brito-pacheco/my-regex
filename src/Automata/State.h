@@ -18,34 +18,18 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file State.h
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17
  *
- * Description:
+ * @brief Header file for the class State.
  *
- * This class models the behaviour of the state of a finite automata
- * and assigns each one a name. A state is composed of:
- *
- * - A name
- * - A set of transitions (edges connecting to other states)
- * - An attribute to indicate whether the state is final.
- *
- * We make the distinction that each state has a unique name. That is to
- * say we take for granted that the state will have a name like:
- * "s1"
- * "state3"
- * "whateveryouwant"
- *
- * Adding an indentical transition has no effect on the set and therefore
- * isn't added.
+ * # Description
+ * It contains only the declarations for the methods and member variables of the class State
  *
  * TODO:
- *
- * 
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Nothing for the moment.
  */
 //</editor-fold>
 
@@ -62,6 +46,29 @@
 namespace Automata {
 
 // DECLARATION
+    /**
+     * @class State
+     *
+     * @brief A class to represent a state of a finite automata
+     *
+     * # Description
+     *
+     * This class models the behaviour of the state of a finite automata
+     * and assigns each one a name. A state is composed of:
+     *
+     * - A name
+     * - A set of transitions (edges connecting to other states)
+     * - An attribute to indicate whether the state is final.
+     *
+     * We make the distinction that each state has a unique name. That is to
+     * say we take for granted that the state will have a name like:
+     * "s1"
+     * "state3"
+     * "whateveryouwant"
+     *
+     * Adding an indentical transition has no effect on the set and therefore
+     * isn't added.
+    */
     class State {
 
     public:
@@ -95,7 +102,7 @@ namespace Automata {
             return *transitions_;
         }
 
-        transition_set_type const &ctransition_set() const {
+        transition_set_type const &transition_set() const {
             return *transitions_;
         }
 

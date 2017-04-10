@@ -18,43 +18,28 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/** @file NFA.h
+/**
+ * @file NFA.h
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 3/22/17.
  *
- * Header file for the class NFA. This class models the behaviour of a Non-Deterministic Finite Automaton
+ * @brief Header file for the class NFA. This file contains declarations of methods and member variables.
  *
- * @class NFA
  * # Description
- * This file defines the methods and attributes for a non deterministic finite automaton.
+ * This file contains the declarations for all the methods and member variables of class NFA. For the majority of
+ * the interface, we have based ourselves on the book:
  *
- * We keep a pointer to the start state as well as a
- * table for the states. We identify a state by a name key,
- * such as "s1" or "state3". It will be up to the user of the
- * class to keep track of the names he/she gives to the
- * states.
- * This means that we have to make references to the states
- * with their names
- *
- * Please see the book:
- * Compilers: Principles, Techniques and Tools (Aho et Al.)
- *
- *
- * The following methods are implemented according to the
- * algorithms in the book:
- * Compilers: Principles, Techniques and Tools (Aho et Al.)
- * Section 3.7.1 From Regular Expressions to Automata:
- *
- * - `state_set_type epsilon_closure(State s); // set of states reachable from state s`
- * - `state_set_type epsilon_closure(state_set_type T); // union of e-closure for all state s in T`
- * - `state_set_type move(state_set_type T, char c); // set of states to which there is a transition on symbol a from s in T`
+ * - Compilers: Principles, Techniques and Tools (Aho et Al.)
  *
  * # TODO
- * - Implement some mechanism to avoid duplicate states when merging two sets of states.
- * This happens a lot when we use methods such as `concatenate()`, which merges two sets
- * of states from different automatas.
+ * - Review if we need to split this class into two classes BasicNFA and CompositeNFA. First one permits access to methods
+ * such as `addTransition()` and `addState()`. The second type is the result type of applying operations such as
+ * concatenation and union to two automatas. Because we lose the ability to reference states solely on the name, this
+ * should make sense.
  *
  * - Implement method for the union of two automatas
+ * - Implement method for kleene star
+ * - Implement method for positive kleen star
  *
  */
 //</editor-fold>
@@ -68,6 +53,20 @@
 
 namespace Automata {
 
+    /** @class NFA
+    * # Description
+    * This file defines the methods and attributes for a non deterministic finite automaton.
+    *
+    * We keep a pointer to the start state as well as a
+    * table for the states. We identify a state by a name key,
+    * such as "s1" or "state3". It will be up to the user of the
+    * class to keep track of the names he/she gives to the
+    * states.
+    * This means that we have to make references to the states with their names
+    *
+    * Please see the book:
+    * Compilers: Principles, Techniques and Tools (Aho et Al.)
+    */
     class NFA {
     public:
         typedef hashtable<std::string, State> state_table_type;
@@ -111,7 +110,7 @@ namespace Automata {
          * # Implementation details
          * This method adds an already constructed state to the NFA
          */
-        void addState(State s);
+//        void addState(State s);
 
         /// Add transition from one state to other
         /**
@@ -146,8 +145,12 @@ namespace Automata {
          * # Implementation Details
          *
          * The automata will merge both sets of states using their respective keys.
-         * This means that if we have two states with equal names in both \f$A\f$ and \f$B\f$,
+         * This means that if we have two states with equal names in both \f$ A \f$ and \f$ B \f$,
          * this will generate a collision and throw an exception.
+         *
+         * # Notes
+         * If you didn't read the previous section then please note the following:
+         * The concatenation of two NFAs with two states with identical names will generate an exception.
          *
          * # Complexity
          * Worst case \f$ O(n^2 + m^2) \f$
@@ -155,12 +158,18 @@ namespace Automata {
          * - \f$ n \f$ is the number of states in \f$ A \f$
          * - \f$ m \f$ is the number of states in \f$ B \f$
          *
+         * ## Notes on the complexity
+         * The complexity is actually really bad because we're reconstructing the whole "graph".
+         * This means we first have to add the states which takes \f$ O(n) \f$.
+         * Then we have to add all transitions. In the worst case scenario we have at most
+         * \f$ kn^2 \f$ arrows coming out of each state. However, \f$ k \f$ is a constant which
+         * represents the number of symbols in the alphabet. Therefore, we have to do \f$ O(n^2) \f$
+         * operations for each graph.
+         *
          * @param to_nfa Right side automata. (Aka. the automata B)
-         * @param start Name of the start state
-         * @param end Name of the end state
          * @return The concatenation of two NFAs
          */
-        NFA concatenate(NFA const &to_nfa, std::string start="0", std::string end="1") const;
+        NFA concatenate(NFA const &to_nfa) const;
 
         /// Sets the string to parse
         /**
@@ -291,13 +300,11 @@ namespace Automata {
          */
         bool match(std::string x);
 
-
         /// We take the convention that the escape character '\x08' represents epsilon
         static const char epsilon = '\x08';
 
-        static int id_;
-
     private:
+        const std::string id_string_;
 
         //! Table of states
         state_table_type state_table_;

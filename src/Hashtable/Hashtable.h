@@ -35,10 +35,6 @@
  * Iterator
  * - Implement constructor parameter validation to verify that
  * the index of the entry corresponds to the index passed
- *
- *
- *
- *
  */
 //</editor-fold>
 

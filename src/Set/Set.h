@@ -26,6 +26,11 @@
  *
  * @brief This header file contains the class declarations and definitions for Set.
  *
+ * # Description
+ *
+ * This file contains the definitions for a class Set. The file contains the definitions
+ * for the `iterator` and `const_iterator` classes which are embedded into the class Set.
+ *
  * # TODO
  * - Implement operator=
  * - Implement bool SubsetOf(self_type left)
@@ -43,11 +48,11 @@
 * # Description
 * The class models the behaviour and notion of a set. The main methods are:
 *
-* ( Assuming an element access has average complexity of O(1) )
+* ( Assuming an element access has average complexity of \f$ O(1) \f$ )
 *
-* - Union ===  \f$ O(n) \f$
-* - Intersection === \f$ O(n) \f$
-* - Difference === \f$ O(n) \f$
+* - Union -  \f$ O(n + m) \f$
+* - Intersection - \f$ O(n) \f$
+* - Difference - \f$ O(n) \f$
 */
 template <
         class Key,
