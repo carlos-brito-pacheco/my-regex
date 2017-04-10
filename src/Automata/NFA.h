@@ -54,8 +54,10 @@
 namespace Automata {
 
     /** @class NFA
+    * @author Carlos Brito (carlos.brito524@gmail.com)
+    * @date 3/22/17.
     * # Description
-    * This file defines the methods and attributes for a non deterministic finite automaton.
+    * This class defines the methods and attributes for a non deterministic finite automaton.
     *
     * We keep a pointer to the start state as well as a
     * table for the states. We identify a state by a name key,
@@ -81,8 +83,8 @@ namespace Automata {
          * If the number of states is known beforehand, then you should set bucket count
          * to be equal to the number of states.
          *
-         * @param start_state_name
-         * @param bucket_count
+         * @param start_state_name Name of initial state
+         * @param bucket_count Number of buckets which the state table will have
          */
         NFA(std::string start_state_name, size_t bucket_count=100);
 

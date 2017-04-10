@@ -18,24 +18,14 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file PearsonHashtable8.h
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
  *
- * Description:
- * A PearsonHashtable8 is a Hashtable which uses
- * the Pearson Hashing function to obtain the key.
- * This particular case is an 8-bit implementation,
- * which means we only have 256 (0-255) available keys.
  *
- * Uses of this class could be for a table of reserved words
- * and symbols of a compiler.
- *
- * TODO:
- * Implement collision handling
- * Check deletion of key in hashtable
- * Handle exceptions
+ * # TODO
+ * Nothing for the moment.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 //</editor-fold>
@@ -48,10 +38,23 @@
 
 #include "Hashtable.h"
 
-using namespace std;
-
 // - - - - - - - - CLASS DEFINITION  - - - - - - - - //
-
+/**
+ * @class PearsonHasher8
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
+ *
+ * @brief An implementation of a Pearson hashtable using our template class hashtable
+ *
+ * # Description
+ * A PearsonHashtable8 is a Hashtable which uses
+ * the Pearson Hashing function to obtain the key.
+ * This particular case is an 8-bit implementation,
+ * which means we only have 256 (0-255) available keys.
+ *
+ * Uses of this class could be for a table of reserved words
+ * and symbols of a compiler.
+ */
 class PearsonHasher8 {
 
     unsigned char *lookup_;
@@ -68,19 +71,19 @@ public:
             lookup_[i] = i;
     }
 
-    virtual size_t operator()(string const& key) const {
+    virtual size_t operator()(std::string const& key) const {
         size_t hash = 0;
-        for (string::const_iterator it = key.begin(); it != key.end(); it++)
+        for (std::string::const_iterator it = key.begin(); it != key.end(); it++)
             hash = lookup_[ hash ^ *it ];
         return hash;
     }
 };
 
 template <class T>
-class PearsonHashtable8 : public hashtable<string, T, PearsonHasher8> {
+class PearsonHashtable8 : public hashtable<std::string, T, PearsonHasher8> {
 public:
     PearsonHashtable8()
-            : hashtable<string,T,PearsonHasher8>(PearsonHasher8::table_size_) {}
+            : hashtable<std::string,T,PearsonHasher8>(PearsonHasher8::table_size_) {}
 
 };
 

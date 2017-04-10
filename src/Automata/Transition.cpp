@@ -18,19 +18,16 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file NFA.cpp
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17
  *
- * Description:
+ * # Description
+ * This is the .cpp file which contains the implementation for all the methods declared in the header file Transition.h
  *
- * TODO:
- * 
- * 
- * 
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * # TODO
+ * Nothing for the moment.
  */
 //</editor-fold>
 

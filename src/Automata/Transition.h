@@ -24,8 +24,7 @@
  * Date: 3/22/17.
  *
  * Description:
- * An object of the type Transition is meant to be inside
- * an object of the type State. A transition can be thought of
+ * An object of the type Transition is meant to be inside an object of the type State. A transition can be thought of
  * as an edge connecting a state to another. The transition indicates:
  *
  * - The source state

@@ -72,10 +72,10 @@ namespace Automata {
     class State {
 
     public:
-        // TYPEDEFS
+        /// Set of transitions
         typedef Set<Transition, Transition::Hasher> transition_set_type;
 
-        // Classes
+        /// Functor which returns a `size_t` hash for the state
         struct Hasher {
             std::hash<std::string> h;
         public:
@@ -87,28 +87,72 @@ namespace Automata {
         };
 
         // Methods
+        /// Constructs a state given a unique name and whether the state is final or not
+        /**
+         * @param name Name of state
+         * @param is_end `true` if the state is end, `false` otherwise
+         * @param bucket_count Number of buckets to be used for a transition set
+         */
         State(std::string name, bool is_end = false, size_t bucket_count = 100);
 
+        /// Adds a transition from this state to the destination on a given symbol
+        /**
+         *
+         * @param destination Destination state
+         * @param symbol Symbol required to move from this state to destination
+         */
         void addTransition(State *destination, char symbol);
 
+        /// Sets whether the state is final or not
+        /**
+         *
+         * @param is_end `true` if state is final, `false` otherwise
+         */
         void setEnd(bool is_end);
+
+        /// Sets the name of the state
+        /**
+         *
+         * @param name Name of state
+         */
         void setName(std::string name);
 
+        /// Returns the name of the state
+        /**
+         *
+         * @return Name of state
+         */
         std::string name() const;
 
+        /// Returns whether the state is final or not
+        /**
+         *
+         * @return `true` if final, `false` otherwise
+         */
         bool isEnd() const;
 
-        transition_set_type &transition_set() {
-            return *transitions_;
-        }
+        /// Returns a reference to the transition set
+        /**
+         *
+         * @return Reference to the transition set
+         */
+        transition_set_type &transition_set();
 
-        transition_set_type const &transition_set() const {
-            return *transitions_;
-        }
+        /// Returns a const reference to the transition set
+        /**
+         *
+         * @return Const reference to the transition set
+         */
+        transition_set_type const &transition_set() const;
 
     private:
+        //! Name of state. Must be unique.
         std::string name_; // this attribute must be unique to each state
+
+        //! Set of transitons
         transition_set_type *transitions_;
+
+        //! Whether state is final
         bool is_end_;
     };
 
