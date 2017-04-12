@@ -72,4 +72,8 @@ namespace Automata {
         return *transitions_;
     }
 
+    State::~State() {
+//        delete transitions_;
+    }
+
 }

@@ -42,7 +42,9 @@ namespace Automata {
               destination_(destination),
               symbol_(symbol),
               source_name_(source->name()),
-              destination_name_(source->name()) {}
+              destination_name_(source->name())
+    {
+    }
 
     char Transition::symbol() const {
         return symbol_;
@@ -54,6 +56,11 @@ namespace Automata {
 
     State *Transition::destination() const {
         return destination_;
+    }
+
+    Transition::~Transition() {
+//        delete source_;
+//        delete destination_;
     }
 
     std::ostream &operator<<(std::ostream &os, const State &obj) {

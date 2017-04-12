@@ -18,26 +18,17 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file Transition.h
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
  *
- * Description:
- * An object of the type Transition is meant to be inside an object of the type State. A transition can be thought of
- * as an edge connecting a state to another. The transition indicates:
- *
- * - The source state
- * - The required symbol to be consumed
- * - The destination state
+ * @brief Header file for the Transition class
  *
  *
  * TODO:
- * 
- * 
- * 
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * - THIS CLASS LEAKS MEMORY
+ * - THERE IS A POINTER NOT BEING ALLOCATED
  */
 //</editor-fold>
 
@@ -50,9 +41,23 @@ namespace Automata {
 
     class State; // forward declare: state and transition are codependent
 
+    /**
+     * @brief Class which represents a transition from one state to other
+     *
+     * # Description
+     * An object of the type Transition is meant to be inside an object of the type State. A transition can be thought of
+     * as an edge connecting a state to another. The transition indicates:
+     *
+     * - The source state
+     * - The required symbol to be consumed
+     * - The destination state
+     */
     class Transition {
     public:
         // Classes
+        /**
+         * @brief Hasher to hash a transition
+         */
         struct Hasher {
             std::hash<std::string> h;
         public:
@@ -67,18 +72,45 @@ namespace Automata {
             }
         };
 
-        // Methods
+        /**
+         * @briefConstructor for transition
+         * @param source Source state
+         * @param destination Destination state
+         * @param symbol Symbol on which to move from source state to the destination state
+         */
         Transition(State *source, State *destination, char symbol);
 
+        /**
+         * @brief Destructor for transition
+         */
+        ~Transition();
+
+        /**
+         * @brief Returns the symbol
+         * @return Symbol
+         */
         char symbol() const;
 
+        /**
+         * @brief Returns the source state
+         * @return Source state
+         */
         State *source() const;
 
+        /**
+         * @brief Returns destination state
+         * @return Destination state
+         */
         State *destination() const;
 
     private:
+        /// Symbol on which to move
         const char symbol_;
+
+        /// From where the transition begins
         State *source_;
+
+        /// To where the transition ends
         State *destination_;
 
 

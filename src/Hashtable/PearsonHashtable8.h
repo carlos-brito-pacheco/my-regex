@@ -60,17 +60,26 @@ class PearsonHasher8 {
     unsigned char *lookup_;
 
 public:
+    /// Table size
     static const size_t table_size_ = 256;
 
 public:
-    PearsonHasher8() {
 
+    /**
+     * @brief Constructor for a PearsonHasher
+     */
+    PearsonHasher8() {
         // init table
         lookup_ = new unsigned char [ table_size_ ];
         for (int i = 0; i < table_size_; i++)
             lookup_[i] = i;
     }
 
+    /**
+     * @brief Function which returns the hash using the Pearson hashing method
+     * @param key Key to hash
+     * @return Hash of key
+     */
     virtual size_t operator()(std::string const& key) const {
         size_t hash = 0;
         for (std::string::const_iterator it = key.begin(); it != key.end(); it++)
