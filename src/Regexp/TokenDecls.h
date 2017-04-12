@@ -43,8 +43,10 @@
 
 namespace Regexp {
 
-/// This type aids in defining the ids for the Token Tags
 /**
+ * @brief This type aids in defining the ids for the Token Tags
+ *
+ * # Description
  * In order to get unique ids, we use an enum structure to assign
  * each of the tokens an id.
  */
@@ -64,57 +66,35 @@ enum {
 };
 
 // Declare token tags
-    //! Tag for left parentheses.
+    /// Tag for left parentheses.
     static const Regexp::Token::Tag TAG_LPAREN(TOK_LPAREN, "left parentheses");
 
-    //! Tag for right parentheses.
+    /// Tag for right parentheses.
     static const Regexp::Token::Tag TAG_RPAREN(TOK_RPAREN, "right parentheses");
 
-    //! Tag for Kleene Star operator.
+    /// Tag for Kleene Star operator.
     static const Regexp::Token::Tag TAG_KLEENE_STAR(TOK_KLEENE, "kleene star");
 
-    //! Tag for Alternation operator.
+    /// Tag for Alternation operator.
     static const Regexp::Token::Tag TAG_ALTER(TOK_ALTER, "alternation");
 
-    //! Tag for Concatenation operator.
+    /// Tag for Concatenation operator.
     static const Regexp::Token::Tag TAG_CONCAT(TOK_CONCAT, "concatenation");
 
-    //! Tag for Question mark symbol. Also known as, the optional operator.
+    /// Tag for Question mark symbol. Also known as, the optional operator.
     static const Regexp::Token::Tag TAG_QMARK(TOK_QMARK, "question mark");
 
-    //! Tag for an escape sequence.
+    /// Tag for an escape sequence.
     static const Regexp::Token::Tag TAG_ESCAPE_SEQUENCE(TOK_ESCAPE_SEQUENCE, "escape sequence");
 
-    //! Tag for a character.
+    /// Tag for a character.
     static const Regexp::Token::Tag TAG_CHAR(TOK_CHAR, "character");
 
-    //! Tag for eof.
+    /// Tag for eof.
     static const Regexp::Token::Tag TAG_EOF(TOK_EOF, "eof");
 
-    //! Tag for "no-tag".
-    static const Regexp::Token::Tag TAG_NONE(TOK_NONE, "");
-
-
-    // Declare the operator tokens
-    //! Token type for left parentheses.
-    static const Regexp::Token LPAREN(TAG_LPAREN, "(");
-
-    //! Token type for right parentheses.
-    static const Regexp::Token RPAREN(TAG_RPAREN, ")");
-
-    //! Token type for Kleene Star.
-    static const Regexp::Token KLEENE_STAR(TAG_KLEENE_STAR, "*");
-
-    //! Token type for Alternation.
-    static const Regexp::Token ALTER(TAG_ALTER, "|");
-
-    //! Token type for Concatenation.
-    static const Regexp::Token CONCAT(TAG_CONCAT, "&");
-
-    //!
-    static const Regexp::Token QMARK(TAG_QMARK, "?");
-    static const Regexp::Token T_EOF(TAG_EOF, "eof");
-    static const Regexp::Token NONE(TAG_NONE, "");
+    /// Tag for "no-tag".
+    static const Regexp::Token::Tag TAG_NONE(TOK_NONE, "none");
 
 }
 

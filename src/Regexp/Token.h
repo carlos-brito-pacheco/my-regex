@@ -50,42 +50,67 @@ namespace Regexp {
     public:
         // TAG CLASS
         class Tag {
-            const int id_; // unique id to identify the which class a token belongs to (this is the id of the tag, not the token)
-            const std::string name_;
+            int id_; // unique id to identify the which class a token belongs to (this is the id of the tag, not the token)
+            std::string name_;
 
         public:
+
+            Tag()
+            {}
+
             Tag(int id, std::string name)
                     : id_(id),
                       name_(name)
             {}
 
-            const int id() const{
+            int id() const{
                 return id_;
             }
 
-            const std::string name() const {
+            std::string name() const {
                 return name_;
             }
 
-            bool operator==(Tag const& rhs) {
+            inline bool operator==(Tag const& rhs) {
                 return id_ == rhs.id_;
             }
 
-            bool operator!=(Tag const& rhs) {
+            inline const bool operator==(Tag const& rhs) const {
+                return id_ == rhs.id_;
+            }
+
+            inline bool operator!=(Tag const& rhs) {
                 return !(*this == rhs);
+            }
+
+            inline const bool operator!=(Tag const& rhs) const {
+                return id_ != rhs.id_;
             }
 
             friend std::ostream& operator<<(std::ostream& os, Tag const& obj) {
                 return os << obj.name();
             }
+
+            Tag& operator=(Tag const& rhs) {
+                if (this != &rhs)
+                {
+                    id_ = rhs.id_;
+                    name_ = rhs.name_;
+                }
+                return *this;
+            }
         };
 
     private:
-        const Tag tag_;
-        const std::string lexeme_;
-        const size_t length_;
+        Tag tag_;
+        std::string lexeme_;
+        size_t length_;
 
     public:
+
+        Token()
+        {}
+
         Token(Tag tag, std::string l)
                 : tag_(tag),
                   lexeme_(l),
@@ -93,22 +118,36 @@ namespace Regexp {
         {}
 
         // Returns tag of token
-        const Tag tag() const {
+        Tag tag() const {
             return tag_;
         }
 
         // Returns lexeme of token
-        const std::string lexeme() const {
+        std::string lexeme() {
             return lexeme_;
         }
 
         // Returns length of token
-        const size_t length() const {
+        size_t length() {
             return length_;
         }
 
-        const char first() const {
+        char first() {
             return lexeme_[0];
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, Token const& obj) {
+            return os <<  "Token<" << obj.tag() << ", " << obj.lexeme_ << ">";
+        }
+
+        Token& operator=(Token const& rhs) {
+            if (this != &rhs)
+            {
+                tag_ = rhs.tag_;
+                lexeme_ = rhs.lexeme_;
+                length_ = rhs.length_;
+            }
+            return *this;
         }
 
     };
