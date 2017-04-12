@@ -37,52 +37,87 @@
 #include <iostream>
 #include "Lexer.h"
 #include "TokenDecls.h"
+#include "AutomataDecls.h"
 
 namespace Regexp {
 
+    Lexer::Lexer() {
+        source_ = "";
+    }
+
     Lexer::Lexer(std::string source)
-            : source_(source),
-              current_position_(0),
-              lookahead_(source[0])
-    {}
+            : source_(source)
+    {
+        addAutomata();
+    }
 
     Token Lexer::nextToken() {
 
-        switch ( source_[current_position_] )
+        size_t chars_lexed = 0;
+
+        if (source_.empty()) // if source is empty then return no token
+            return Token(TAG_EOF, "");
+
+        // set string to parse
+        for (typename std::vector<match_pair_type>::iterator it = match_list.begin(); it != match_list.end(); it++)
+            it->first.setString(source_);
+
+
+        if (source_.length() == 1) // if there is only one char then advance and return the tag
         {
-
-            case ( '(' ): // LEFT PARENTHESES
-            std::cout << "yay!" << std::endl;
-                return LPAREN;
-
-            case ( ')' ): // RIGHT PARENTHESES
-                return RPAREN;
-
-            case ( '*' ): // KLEENE STAR
-                return KLEENE_STAR;
-
-            case ( '|' ): // ALTERNATION
-                return ALTER;
-
-            case ( '&' ): // CONCATENATION
-                return CONCAT;
-
-            case ( '?' ): //
-                return QMARK;
-
-            case ( 'e' ):
-                return T_EOF;
-
-            default:
-                // THROW ERROR
-                break;
+            advance();
+            std::string lexeme = source_; // the biggest lexeme is the source itself
+            source_ = ""; // consume final char
+            return Token( match(), lexeme );
         }
 
-        current_position_ += 1;
+        Token::Tag tag_new; // tag after advancing
+        Token::Tag tag_old; // tag before advancing
 
-        return NONE;
+        // This do-while cycle iterates until it can't find a matching pattern
+        // When it ends, it has memorized the last matching pattern in tag_old
+        // This means we find the largest lexeme in the source
+        do
+        {
+            advance();
+            chars_lexed++;
+
+            tag_old = tag_new;
+            tag_new = match();
+
+        } while (tag_new != TAG_NONE && chars_lexed != source_.length());
+
+        std::string lexeme = source_.substr(0,chars_lexed-1); // copy lexeme into variable
+        source_ = source_.substr(chars_lexed-1); // consume chars
+
+        return Token(tag_old, lexeme);
     }
 
+    Token::Tag Lexer::match() {
+        for (typename std::vector<match_pair_type>::iterator it = match_list.begin(); it != match_list.end(); it++)
+        {
+            if ( it->first.accepts() ) // if the automata is at an accepting state
+            {
+                return it->second; // return its associated token tag
+            }
+        }
 
+        return TAG_NONE;
+    }
+
+    void Lexer::advance() {
+        for (typename std::vector<match_pair_type>::iterator it = match_list.begin(); it != match_list.end(); it++)
+            it->first.advance();
+    }
+
+    // edit this function to add more automata
+    void Lexer::addAutomata() {
+        match_list.push_back( std::make_pair( KLEENE_NFA, TAG_KLEENE_STAR ) );
+        match_list.push_back( std::make_pair( ALPHA_CHAR_NFA, TAG_CHAR ) );
+    }
+
+    void Lexer::setSource(std::string source) {
+        source_ = source;
+    }
 
 }
