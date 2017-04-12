@@ -88,7 +88,7 @@ namespace Regexp {
          *
          * This method will consume the source input and return the next token
          * determined by the given patterns in the addAutomata() method.
-         * @return
+         * @return Next token lexed
          */
         Token nextToken();
 
@@ -106,7 +106,7 @@ namespace Regexp {
          * # Description
          * This method will return a corresponding tag for a lexeme.
          *
-         * @return
+         * @return Tag for token
          */
         Token::Tag match();
 
