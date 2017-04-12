@@ -61,8 +61,9 @@ template <
 >
 class Set {
     typedef Set<Key, Hasher, KeyEqual> self_type;
-    typedef typename hashtable<Key, Key&, Hasher, KeyEqual>::iterator hashtable_iterator;
-    typedef typename hashtable<Key, Key&, Hasher, KeyEqual>::const_iterator const_hashtable_iterator;
+    typedef hashtable<Key, Key&, Hasher, KeyEqual> table_type;
+    typedef typename table_type::iterator hashtable_iterator;
+    typedef typename table_type::const_iterator const_hashtable_iterator;
 
 public:
     /// Iterator class
@@ -134,9 +135,19 @@ public:
     };
 
 public:
+
+    Set()
+    {}
+
     Set (size_t bucket_count)
             : table_( hashtable<Key,Key&,Hasher,KeyEqual>(bucket_count) )
     {}
+//
+    Set(const Set& set)
+    {
+        bucket_count_ = set.bucket_count_;
+        table_ = set.table_;
+    }
 
 
     /**
@@ -295,7 +306,7 @@ public:
      * @return True if the set is empty, else false
      */
     bool empty() {
-        return count() > 0;
+        return count() == 0;
     }
 
     /**

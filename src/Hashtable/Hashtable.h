@@ -227,6 +227,10 @@ public:
 
     // METHODS
 public:
+
+    hashtable()
+    {}
+
     /// Constructs a hashtable with specified number of buckets
     hashtable(const size_t buckets)
             : bucket_count_(buckets),
@@ -560,11 +564,23 @@ public:
         {
             bucket_count_ = rhs.bucket_count_;
             count_ = rhs.count_;
-            table_ = index_table( rhs.bucket_count_ ); // invalidate previous data, let the g.c. take care of it
 
-            std::copy(rhs.table_.begin(), rhs.table_.end(), table_.begin()); // copy data from rhs into this
+            while (!table_.empty())
+                table_.pop_back();
+
+            for (int i = 0; i < bucket_count_; i++)
+                table_.push_back( rhs.at(i) );
         }
         return *this;
+    }
+
+    hashtable(const hashtable& table) {
+        bucket_count_ = table.bucket_count_;
+        count_ = table.count_;
+        table_ = index_table(bucket_count_); // invalidate previous data, let the g.c. take care of it
+
+        for (int i = 0; i < bucket_count_; i++)
+            table_.push_back( table.at(i) );
     }
 
     // VARIABLES
