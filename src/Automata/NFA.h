@@ -54,21 +54,24 @@
 namespace Automata {
 
     /** @class NFA
-    * @author Carlos Brito (carlos.brito524@gmail.com)
-    * @date 3/22/17.
-    * # Description
-    * This class defines the methods and attributes for a non deterministic finite automaton.
-    *
-    * We keep a pointer to the start state as well as a
-    * table for the states. We identify a state by a name key,
-    * such as "s1" or "state3". It will be up to the user of the
-    * class to keep track of the names he/she gives to the
-    * states.
-    * This means that we have to make references to the states with their names
-    *
-    * Please see the book:
-    * Compilers: Principles, Techniques and Tools (Aho et Al.)
-    */
+     * @author Carlos Brito (carlos.brito524@gmail.com)
+     * @date 3/22/17.
+     *
+     * @brief This class models the behaviour of a non deterministic finite automaton
+     *
+     * # Description
+     * This class defines the methods and attributes for a non deterministic finite automaton.
+     *
+     * We keep a pointer to the start state as well as a
+     * table for the states. We identify a state by a name key,
+     * such as "s1" or "state3". It will be up to the user of the
+     * class to keep track of the names he/she gives to the
+     * states.
+     * This means that we have to make references to the states with their names
+     *
+     * Please see the book:
+     * Compilers: Principles, Techniques and Tools (Aho et Al.)
+     */
     class NFA {
     public:
         typedef hashtable<std::string, State> state_table_type;
@@ -86,7 +89,9 @@ namespace Automata {
          * @param start_state_name Name of initial state
          * @param bucket_count Number of buckets which the state table will have
          */
-        NFA(std::string start_state_name, size_t bucket_count=100);
+        explicit NFA(std::string start_state_name, size_t bucket_count=100);
+
+        NFA(const NFA& nfa);
 
         /// Destructor method for NFA
         ~NFA();
@@ -302,28 +307,32 @@ namespace Automata {
          */
         bool match(std::string x);
 
+
+        /// Copies the NFA to another
+        NFA& operator=(const NFA& rhs);
+
         /// We take the convention that the escape character '\x08' represents epsilon
         static const char epsilon = '\x08';
 
-    private:
+    public:
         const std::string id_string_;
 
-        //! Table of states
+        /// Table of states
         state_table_type state_table_;
 
-        //! Set of end states
+        /// Set of end states
         state_set_type end_states_;
 
-        //! Pointer to start state
+        /// Pointer to start state
         State *start_state_;
 
-        //! String to match
+        /// String to match
         std::string str_to_match;
 
-        //! Set that contains the current states
+        /// Set that contains the current states
         state_set_type S_;
 
-        //! Iterator pointing to the current char on str_to_match
+        /// Iterator pointing to the current char on str_to_match
         std::string::iterator current_ptr_;
     };
 
