@@ -35,6 +35,7 @@
 //</editor-fold>
 
 #include <iostream>
+#include <vector>
 #include "Lexer.h"
 #include "TokenDecls.h"
 #include "AutomataDecls.h"
@@ -53,12 +54,10 @@ namespace Regexp {
 
     Token Lexer::nextToken() {
 
-        size_t chars_lexed = 0;
-
         if (source_.empty()) // if source is empty then return no token
             return Token(TAG_EOF, "");
 
-        // set string to parse
+        // set
         for (typename std::vector<match_pair_type>::iterator it = match_list.begin(); it != match_list.end(); it++)
             it->first.setString(source_);
 
@@ -69,28 +68,40 @@ namespace Regexp {
             std::string lexeme = source_; // the biggest lexeme is the source itself
             source_ = ""; // consume final char
             return Token( match(), lexeme );
-        }
-
-        Token::Tag tag_new; // tag after advancing
-        Token::Tag tag_old; // tag before advancing
-
-        // This do-while cycle iterates until it can't find a matching pattern
-        // When it ends, it has memorized the last matching pattern in tag_old
-        // This means we find the largest lexeme in the source
-        do
+        } else
         {
-            advance();
-            chars_lexed++;
+            Token::Tag tag; // tag to inspect
+            Token::Tag token_tag; // tag of token
 
-            tag_old = tag_new;
-            tag_new = match();
+            // This do-while cycle iterates until it can't find a matching pattern
+            // When it ends, it has memorized the last matching pattern (differente from class NONE) in token_tag
+            // This means we find the next largest lexeme in the source
+            size_t chars_lexed = 0;
+            do
+            {
+                advance(); // advance all automatas
+                chars_lexed++;
 
-        } while (tag_new != TAG_NONE && chars_lexed != source_.length());
+                tag = match(); // get matching tag
 
-        std::string lexeme = source_.substr(0,chars_lexed-1); // copy lexeme into variable
-        source_ = source_.substr(chars_lexed-1); // consume chars
+                if (tag != TAG_NONE)
+                    token_tag = tag; // save non-none tag
+            } while (availableStates() && chars_lexed < source_.length());
 
-        return Token(tag_old, lexeme);
+            std::string lexeme;
+            if (chars_lexed == 1) // handle the special case
+            {
+                lexeme = source_.substr(0, 1);
+                source_.erase(0,1);
+                return Token(token_tag, lexeme);
+            }
+            else
+            {
+                lexeme = source_.substr(0,chars_lexed-1); // copy lexeme into variable
+                source_.erase(0,chars_lexed-1); // consume chars
+                return Token(token_tag, lexeme);
+            }
+        }
     }
 
     Token::Tag Lexer::match() {
@@ -101,7 +112,6 @@ namespace Regexp {
                 return it->second; // return its associated token tag
             }
         }
-
         return TAG_NONE;
     }
 
@@ -118,6 +128,14 @@ namespace Regexp {
 
     void Lexer::setSource(std::string source) {
         source_ = source;
+    }
+
+    bool Lexer::availableStates() {
+        for (typename std::vector<match_pair_type>::iterator it = match_list.begin(); it != match_list.end(); it++)
+            if (!it->first.getCurrentStates().empty())
+                return true;
+
+        return false;
     }
 
 }

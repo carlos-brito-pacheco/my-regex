@@ -128,6 +128,8 @@ namespace Regexp {
          * have to add a pair associating an automata with its token tag.
          */
         void addAutomata();
+
+        bool availableStates();
     };
 }
 
