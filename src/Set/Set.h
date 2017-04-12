@@ -139,33 +139,55 @@ public:
     {}
 
 
-    /// Inserts element into set
+    /**
+     * @brief Inserts element into set
+     * @param element Element to be inserted
+     * @return
+     */
     iterator insert( Key element ) {
         return iterator( table_.insert(element, element) );
     }
 
-    /// Removes specified element from set
+    /**
+     * @brief Removes specified element from set
+     * @param element Element to be removed
+     */
     void remove( Key element ) {
         return table_.erase(element);
     }
 
-    /// Finds element in set
+    /**
+     * @brief Finds element in set
+     * @param element Element to find
+     * @return Iterator to found element
+     *
+     * If no element is found then this will return `end()`.
+     */
     iterator find( Key element ) {
         return iterator( table_.find(element) );
     }
 
-    /// Finds element in set
+    /**
+     * @brief Finds element in set
+     * @param element Element to find
+     * @return Const iterator to found element
+     */
     const_iterator find( Key element ) const {
         return const_iterator( table_.find(element) );
     }
 
-    /// Returns true if element is contained in set, false otherwise
+    /**
+     * @brief Returns true if element is contained in set, false otherwise
+     * @param element Element in question
+     * @return True if element is in set, else false
+     */
     bool contains( Key element ) {
         return table_.contains_key(element);
     }
 
-    /// Returns the union of the set with another set \f$ S \f$
     /**
+     * @brief Returns the union of the set with another set \f$ S \f$
+     *
      * # Complexity
      * \f$ O(n + m) \f$ where \f$ n \f$ and \f$ m \f$ are both sets' respective sizes
      * @param S second set
@@ -179,8 +201,9 @@ public:
         return result;
     }
 
-    /// Returns the intersection of the set with another set \f$ S \f$
     /**
+     * @brief Returns the intersection of the set with another set \f$ S \f$
+     *
      * # Complexity
      * \f$ O(n) \f$ where \f$ n \f$ is the number of elements in set \f$ S \f$
      * @param S second set
@@ -195,8 +218,8 @@ public:
         return result;
     }
 
-    /// Returns the difference of the set with another set \f$ S \f$
     /**
+     * @brief Returns the difference of the set with another set \f$ S \f$
      *
      * @param right the right operand of the difference
      * @return the difference of this set minus the second set
@@ -210,44 +233,88 @@ public:
         return result;
     }
 
-    /// Returns iterator pointing to the first element of the set
+    /**
+     * @brief Returns iterator pointing to the first element of the set
+     *
+     * If no elemnent is in set, then this will return `end()`.
+     *
+     * @return Iterator pointing to first element in set
+     */
     iterator begin() {
         return iterator(table_.begin());
     }
 
-    /// Returns iterator pointing to the end of the set
+    /**
+     * @brief Returns iterator pointing to the end of the set
+     * @return Iterator pointing to the end of set
+     */
     iterator end() {
         return iterator(table_.end());
     }
 
-    /// Returns const iterator pointing to the first element of the set
+    /**
+     * @brief Returns const iterator pointing to the first element of the set
+     *
+     * See `begin()` for a better understanding of what constitues the beginninng of a set.
+     *
+     * @return Const iterator to the beginning of set.
+     */
     const_iterator cbegin() const {
         return const_iterator(table_.cbegin());
     }
 
-    /// Returns const iterator pointing to the end of the set
+    /**
+     * @brief Returns const iterator pointing to the end of the set
+     *
+     * See `end()`.
+     *
+     * @return Const iterator pointing to the end of set.
+     */
     const_iterator cend() const {
         return const_iterator(table_.cend());
     }
 
-    /// Returns the number of elements in the set
-    size_t count() {
+    /**
+     * @brief Returns the number of elements in the set
+     * @return Number of elements in set
+     */
+    size_t count() const {
         table_.count();
     }
 
-    /// Returns the number of buckets that the set uses
-    size_t bucket_count() {
+    /**
+     * @brief Returns the number of buckets that the set uses
+     * @return Number of buckets used internally by the set
+     */
+    size_t bucket_count() const {
         return table_.bucket_count();
     }
 
-    /// Returns true if the set is empty, false otherwise
+    /**
+     * @brief Returns true if the set is empty, false otherwise
+     * @return True if the set is empty, else false
+     */
     bool empty() {
         return count() > 0;
     }
 
+    /**
+     * @brief Overloaded copy operator
+     * @param rhs Set to be copied
+     * @return Reference to new set
+     */
+    self_type& operator=(const self_type& rhs) {
+        bucket_count_ = rhs.bucket_count_;
+        table_ = rhs.table_;
+        return *this;
+    }
+
     // VARIABLES
 private:
+    /// Number of buckets that the set uses to store the elements
     size_t bucket_count_;
+
+    /// Internal hashtable of the set
     hashtable<Key, Key&, Hasher, KeyEqual> table_;
 };
 
