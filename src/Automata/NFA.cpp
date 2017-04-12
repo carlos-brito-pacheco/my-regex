@@ -156,7 +156,7 @@ namespace Automata {
             S = epsilon_closure(move(S, *c));
         }
 
-        return (S.Intersection(end_states_)).empty();
+        return !(S.Intersection(end_states_)).empty();
     }
 
     State *NFA::initialState() const {
@@ -180,7 +180,7 @@ namespace Automata {
     }
 
     bool NFA::accepts() {
-        return (S_.Intersection(end_states_)).empty();
+        return !(S_.Intersection(end_states_)).empty();
     }
 
     NFA::state_set_type NFA::getCurrentStates() {
