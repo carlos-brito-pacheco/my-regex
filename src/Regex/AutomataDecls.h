@@ -119,6 +119,37 @@ Automata::NFA getAlphaCharNFA() {
     return char_nfa;
 }
 
+/**
+ * @brief Get an automata which parses an ascii character
+ *
+ * The range is inclusive on both sides
+ * @param from Starting ascii character
+ * @param to Ending ascii character
+ * @return NFA parsing an ascii character
+ */
+Automata::NFA getAsciiNFA(char from, char to) {
+    Automata::NFA ascii_nfa("0");
+    ascii_nfa.addState("1", true);
+
+    for(char c = from; c != to + 1; c++)
+        ascii_nfa.addTransition("0", "1", c);
+
+    return ascii_nfa;
+}
+
+/**
+ * @brief Get an automata which parses whitespace
+ * @return  NFA parsing a whitespace
+ */
+Automata::NFA getWhiteSpaceNFA() {
+    Automata::NFA white_space_nfa("0");
+    white_space_nfa.addState("1", true);
+
+    white_space_nfa.addTransition("0", "1", ' ');
+
+    return white_space_nfa;
+}
+
 /// Accepts Kleene Stars
 const Automata::NFA KLEENE_NFA = getKleeneStarNFA();
 
@@ -136,6 +167,12 @@ const Automata::NFA RPAREN_NFA = getRParenNFA();
 
 /// Accepts alphanumeric characters
 const Automata::NFA ALPHA_CHAR_NFA = getAlphaCharNFA();
+
+/// Accepts ascii characters in the range 33 ('!') to 126 ('~') inclusive
+const Automata::NFA ASCII_NFA = getAsciiNFA(33, 126);
+
+/// Accepts whitespace
+const Automata::NFA SPACE_NFA = getWhiteSpaceNFA();
 
 
 

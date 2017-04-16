@@ -36,7 +36,7 @@
 
 #include <string>
 
-namespace Regexp {
+namespace Regex {
 
     /**
      * @brief Token class to represent a Token during lexing of the Regular Expression grammar
@@ -79,6 +79,11 @@ namespace Regexp {
                     : id_(id),
                       name_(name)
             {}
+
+            Tag(const Tag &tag) {
+                id_ = tag.id_;
+                name_ = tag.name_;
+            }
 
             /**
              * @brief Returns the id of tag
@@ -187,7 +192,7 @@ namespace Regexp {
         }
 
         friend std::ostream& operator<<(std::ostream& os, Token const& obj) {
-            return os <<  "Token<" << obj.tag() << ", " << obj.lexeme_ << ">";
+            return os <<  std::string("Token<") << obj.tag() << std::string(", ") << obj.lexeme_ << std::string(">");
         }
 
         /**

@@ -41,7 +41,7 @@
 
 #include "Token.h"
 
-namespace Regexp {
+namespace Regex {
 
 /**
  * @brief This type aids in defining the ids for the Token Tags
@@ -62,39 +62,43 @@ enum {
     TOK_QMARK,
 
     TOK_CHAR,
+    TOK_SPACE,
     TOK_ESCAPE_SEQUENCE
 };
 
 // Declare token tags
     /// Tag for left parentheses.
-    static const Regexp::Token::Tag TAG_LPAREN(TOK_LPAREN, "left parentheses");
+    static const Regex::Token::Tag TAG_LPAREN(TOK_LPAREN, "left parentheses");
 
     /// Tag for right parentheses.
-    static const Regexp::Token::Tag TAG_RPAREN(TOK_RPAREN, "right parentheses");
+    static const Regex::Token::Tag TAG_RPAREN(TOK_RPAREN, "right parentheses");
 
     /// Tag for Kleene Star operator.
-    static const Regexp::Token::Tag TAG_KLEENE_STAR(TOK_KLEENE, "kleene star");
+    static const Regex::Token::Tag TAG_KLEENE_STAR(TOK_KLEENE, "kleene star");
 
     /// Tag for Alternation operator.
-    static const Regexp::Token::Tag TAG_ALTER(TOK_ALTER, "alternation");
+    static const Regex::Token::Tag TAG_ALTER(TOK_ALTER, "alternation");
 
     /// Tag for Concatenation operator.
-    static const Regexp::Token::Tag TAG_CONCAT(TOK_CONCAT, "concatenation");
+    static const Regex::Token::Tag TAG_CONCAT(TOK_CONCAT, "concatenation");
 
     /// Tag for Question mark symbol. Also known as, the optional operator.
-    static const Regexp::Token::Tag TAG_QMARK(TOK_QMARK, "question mark");
+    static const Regex::Token::Tag TAG_QMARK(TOK_QMARK, "question mark");
 
     /// Tag for an escape sequence.
-    static const Regexp::Token::Tag TAG_ESCAPE_SEQUENCE(TOK_ESCAPE_SEQUENCE, "escape sequence");
+    static const Regex::Token::Tag TAG_ESCAPE_SEQUENCE(TOK_ESCAPE_SEQUENCE, "escape sequence");
 
     /// Tag for a character.
-    static const Regexp::Token::Tag TAG_CHAR(TOK_CHAR, "character");
+    static const Regex::Token::Tag TAG_CHAR(TOK_CHAR, "character");
+
+    /// Tag for whitespace
+    static const Regex::Token::Tag TAG_SPACE(TOK_SPACE, "whitespace");
 
     /// Tag for eof.
-    static const Regexp::Token::Tag TAG_EOF(TOK_EOF, "eof");
+    static const Regex::Token::Tag TAG_EOF(TOK_EOF, "eof");
 
     /// Tag for "no-tag".
-    static const Regexp::Token::Tag TAG_NONE(TOK_NONE, "none");
+    static const Regex::Token::Tag TAG_NONE(TOK_NONE, "none");
 
 }
 

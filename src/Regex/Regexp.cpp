@@ -43,7 +43,7 @@
 #include <queue>
 #include <cctype>
 #include "Regexp.h"
-#include "Errors.h"
+#include "ParserErrors.h"
 #include "../Hashtable/PearsonHashtable8.h"
 
 
