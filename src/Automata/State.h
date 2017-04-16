@@ -28,7 +28,7 @@
  * # Description
  * It contains only the declarations for the methods and member variables of the class State
  *
- * TODO:
+ * # TODO
  * - THIS CLASS LEAKS MEMORY
  * - THERE IS A POINTER NOT BEING ALLOCATED
  */
@@ -97,11 +97,14 @@ namespace Automata {
         /**
          * @brief Constructs a state given a unique name and whether the state is final or not
          * @param name Name of state
-         * @param is_end `true` if the state is end, `false` otherwise
+         * @param is_end `true` if the state is final, `false` otherwise
          * @param bucket_count Number of buckets to be used for a transition set
          */
         State(std::string name, bool is_end = false, size_t bucket_count = 100);
 
+        /**
+         * @brief Destructor for state
+         */
         ~State();
 
         /**

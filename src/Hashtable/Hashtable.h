@@ -27,14 +27,7 @@
  *
  *
  * # TODO
- *
- * - Implement operator=
- * - Implement const_iterator
- * - Implement hashtable(h)
- *
- * Iterator
- * - Implement constructor parameter validation to verify that
- * the index of the entry corresponds to the index passed
+ * Nothing for the moment.
  */
 //</editor-fold>
 
@@ -54,7 +47,7 @@
 * We have to note that the default value for the Hasher is to utilize
 * `std::hash` which overloads `operator()` and has a result of type `size_t`
 *
-* For insertion of an hash_entry of type `T`, we expect that the object class
+* For insertion of a hash_entry of type `T`, we expect that the object class
 * for `T` has an appropiate and well behaved copy constructor.
 */
 template <

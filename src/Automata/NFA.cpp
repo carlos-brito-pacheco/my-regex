@@ -47,6 +47,9 @@ namespace Automata {
         start_state_ = getState(start_state_name); // find the address of the initial state
     }
 
+    NFA::NFA()
+    {}
+
     NFA::~NFA() {
     }
 

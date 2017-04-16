@@ -93,6 +93,8 @@ namespace Automata {
 
         NFA(const NFA& nfa);
 
+        NFA();
+
         /// Destructor method for NFA
         ~NFA();
 
