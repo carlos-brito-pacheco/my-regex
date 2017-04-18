@@ -1,5 +1,10 @@
-# Description
-Regular expression parser. This will be a part of a compiler for a small language.
+# What is it?
+This is a Regex engine that matches a string like `abbccccaa` to a pattern like `a+b*(cc)*aa`.
+It does this by building a Non-Deterministic Finite Automata  out of the given regular expression and recursively
+emulating the automata.
+
+One will find that the code has been abstracted in such a way that it will be easy to understand.
+Albeit, there is still much to do.
 
 # How-to use
 Please see the Examples/ directory for examples on how to use the code. Each subfolder will have an explanation.
@@ -20,7 +25,6 @@ Type in:
 cmake .
 cd cmake-build-debug
 make
-
 ````
 
 And to execute:

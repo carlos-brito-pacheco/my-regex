@@ -1514,7 +1514,7 @@ FORMULA_TRANSPARENT    = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-USE_MATHJAX            = YES
+USE_MATHJAX            = NO
 
 # When MathJax is enabled you can set the default output format to be used for
 # the MathJax output. See the MathJax site (see:
@@ -1718,7 +1718,7 @@ EXTRA_PACKAGES         = mypackage
 # to HTML_HEADER.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_HEADER           = 
+LATEX_HEADER           =
 
 # The LATEX_FOOTER tag can be used to specify a personal LaTeX footer for the
 # generated LaTeX document. The footer should contain everything after the last
