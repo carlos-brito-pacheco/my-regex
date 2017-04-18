@@ -39,12 +39,12 @@
 namespace Automata {
 
     NFA::NFA(std::string start_state_name, size_t bucket_count)
-            : state_table_(state_table_type(bucket_count)),
-              end_states_(state_set_type(bucket_count)),
+            : stateTable_(state_table_type(bucket_count)),
+              endStates_(state_set_type(bucket_count)),
               S_(state_set_type(1))
     {
         addState(start_state_name); // add initial state
-        start_state_ = getState(start_state_name); // find the address of the initial state
+        startState_ = getState(start_state_name); // find the address of the initial state
     }
 
     NFA::NFA()
@@ -56,13 +56,13 @@ namespace Automata {
     void NFA::addState(std::string state_name, bool is_end) {
         State s(state_name, is_end);
 
-        if (state_table_.contains_key(s.name()))
+        if (stateTable_.contains_key(s.name()))
             throw DuplicateStateError(s.name());
 
         if (s.isEnd())
-            end_states_.insert(s);
+            endStates_.insert(s);
 
-        state_table_.insert(s.name(), s);
+        stateTable_.insert(s.name(), s);
     }
 
     void NFA::addTransition(State *from, State *to, char symbol) {
@@ -79,17 +79,20 @@ namespace Automata {
     }
 
     NFA::state_table_type & NFA::table() {
-        return state_table_;
+        return stateTable_;
     }
 
     const NFA::state_table_type &NFA::table() const {
-        return state_table_;
+        return stateTable_;
     }
 
     State *NFA::getState(std::string name) {
-        state_table_type::iterator it = state_table_.find(name);
+        state_table_type::iterator it = stateTable_.find(name);
 
-        if (it == state_table_.end())
+        if (stateTable_.count() == 0)
+            throw EmptyStateSetError();
+
+        if (it == stateTable_.end())
             throw StateNotFoundError(name);
 
         State *s = &(it->second);
@@ -97,7 +100,7 @@ namespace Automata {
     }
 
     NFA::state_set_type NFA::epsilon_closure(State s) {
-        state_set_type result(state_table_.count());
+        state_set_type result(stateTable_.count());
         result.insert(s);
 
         State::transition_set_type transitions = s.transition_set();
@@ -117,7 +120,7 @@ namespace Automata {
     }
 
     NFA::state_set_type NFA::epsilon_closure(state_set_type T) {
-        state_set_type result(state_table_.count());
+        state_set_type result(stateTable_.count());
         for (state_set_type::iterator it = T.begin(); it != T.end(); it++) // iterate over states s in T
         {
             State s = *it;
@@ -128,7 +131,7 @@ namespace Automata {
     }
 
     NFA::state_set_type NFA::move(NFA::state_set_type T, char c) {
-        state_set_type result(state_table_.count());
+        state_set_type result(stateTable_.count());
 
         for (state_set_type::iterator s_it = T.begin(); s_it != T.end(); s_it++) // iterate over states s in T
         {
@@ -151,7 +154,7 @@ namespace Automata {
     bool NFA::match(std::string x) {
 
 
-        state_set_type S = epsilon_closure(*start_state_);
+        state_set_type S = epsilon_closure(*startState_);
 
         for (std::string::iterator c = x.begin(); c != x.end(); c++)
         {
@@ -159,18 +162,18 @@ namespace Automata {
             S = epsilon_closure(move(S, *c));
         }
 
-        return !(S.Intersection(end_states_)).empty();
+        return !(S.Intersection(endStates_)).empty();
     }
 
     State *NFA::initialState() const {
-        return start_state_;
+        return startState_;
     }
 
 
     void NFA::setString(std::string str) {
         str_to_match = str;
         current_ptr_ = str_to_match.begin();
-        S_ = epsilon_closure(*start_state_);
+        S_ = epsilon_closure(*startState_);
     }
 
     void NFA::advance() {
@@ -183,11 +186,149 @@ namespace Automata {
     }
 
     bool NFA::accepts() {
-        return !(S_.Intersection(end_states_)).empty();
+        return !(S_.Intersection(endStates_)).empty();
     }
 
     NFA::state_set_type NFA::getCurrentStates() {
         return S_;
+    }
+
+    NFA::state_set_type &NFA::end_states() {
+        return endStates_;
+    }
+
+    const NFA::state_set_type &NFA::end_states() const {
+        return endStates_;
+    }
+
+    NFA &NFA::operator=(const NFA &rhs) {
+
+        // Overwriting of automata
+        S_ = rhs.S_;
+        stateTable_ = state_table_type( rhs.table().bucket_count() );
+        endStates_ = state_set_type( rhs.end_states().bucket_count() );
+
+        // Copy states of other automata
+        for (state_table_type::const_iterator entry_it = rhs.stateTable_.cbegin();
+             entry_it != rhs.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            this->addState(s.name(), s.isEnd());
+        }
+
+        startState_ = getState(rhs.initialState()->name());
+
+
+        // Add the transitions
+        for (state_table_type::const_iterator entry_it = rhs.stateTable_.cbegin();
+             entry_it != rhs.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            State::transition_set_type transitions = s.transition_set();
+            for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
+            {
+                Transition t = *t_it;
+                this->addTransition(t.source()->name(), t.destination()->name(), t.symbol());
+            }
+        }
+        return *this;
+    }
+
+    NFA::NFA(const NFA &nfa)
+            : stateTable_( state_table_type( nfa.table().bucket_count() ) ),
+              endStates_( state_set_type( nfa.end_states().bucket_count() ) ),
+              S_( nfa.S_ )
+    {
+        // Copy states of other automata
+        for (state_table_type::const_iterator entry_it = nfa.stateTable_.cbegin();
+             entry_it != nfa.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            this->addState(s.name(), s.isEnd());
+        }
+
+        startState_ = getState(nfa.initialState()->name());
+
+
+        // Add the transitions
+        for (state_table_type::const_iterator entry_it = nfa.stateTable_.cbegin();
+             entry_it != nfa.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            State::transition_set_type transitions = s.transition_set();
+            for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
+            {
+                Transition t = *t_it;
+                this->addTransition(t.source()->name(), t.destination()->name(), t.symbol());
+            }
+        }
+    }
+
+    void NFA::setInitialState(std::string name) {
+        startState_ = getState(name);
+    }
+
+    NFA NFA::alternate(NFA const &to_nfa) const {
+        std::string start = "3_0";
+        std::string end = "3_1";
+
+        // Declaration of automata
+        NFA result(start, // initial state with name start
+                   this->stateTable_.bucket_count() +
+                   to_nfa.stateTable_.bucket_count()); // maximum size to reduce load factor of hashtable
+        result.addState(end, true); // add end state
+
+        // Copy states of other automata
+        for (state_table_type::const_iterator entry_it = to_nfa.stateTable_.cbegin();
+             entry_it != to_nfa.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            result.addState("2_" + s.name(), s.isEnd());
+        }
+
+        // Add the transitions of other automata
+        for (state_table_type::const_iterator entry_it = to_nfa.stateTable_.cbegin();
+             entry_it != to_nfa.stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            State::transition_set_type transitions = s.transition_set();
+            for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
+            {
+                Transition t = *t_it;
+                result.addTransition("2_" + t.source()->name(), "2_" + t.destination()->name(), t.symbol());
+            }
+        }
+
+        // Copy states of this automata
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            result.addState("1_" + s.name(), s.isEnd());
+        }
+
+        // Add the transitions
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
+        {
+            State s = entry_it->second;
+            State::transition_set_type transitions = s.transition_set();
+            for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
+            {
+                Transition t = *t_it;
+                result.addTransition("1_" + t.source()->name(), "1_" + t.destination()->name(), t.symbol());
+            }
+        }
+
+        // Add two epsilon transitions from result to both automatas
+        State *this_init_state = this->initialState();
+        result.addTransition(result.initialState()->name(), "1_" + this_init_state->name(), epsilon);
+
+        State *other_init_state = to_nfa.initialState();
+        result.addTransition(result.initialState()->name(), "2_" + other_init_state->name(), epsilon);
+
+
+        return result;
     }
 
     NFA NFA::concatenate(NFA const &to_nfa) const {
@@ -197,14 +338,14 @@ namespace Automata {
 
         // Declaration of automata
         NFA result(start, // initial state with name start
-                   this->state_table_.bucket_count() +
-                   to_nfa.state_table_.bucket_count()); // maximum size to reduce load factor of hashtable
+                   this->stateTable_.bucket_count() +
+                   to_nfa.stateTable_.bucket_count()); // maximum size to reduce load factor of hashtable
         result.addState(end, true); // add end state
 
 
         // Copy states of other automata
-        for (state_table_type::const_iterator entry_it = to_nfa.state_table_.cbegin();
-             entry_it != to_nfa.state_table_.cend(); entry_it++)
+        for (state_table_type::const_iterator entry_it = to_nfa.stateTable_.cbegin();
+             entry_it != to_nfa.stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
             result.addState("2_" + s.name(), false);
@@ -214,8 +355,8 @@ namespace Automata {
         }
 
         // Add the transitions of other automata
-        for (state_table_type::const_iterator entry_it = to_nfa.state_table_.cbegin();
-             entry_it != to_nfa.state_table_.cend(); entry_it++)
+        for (state_table_type::const_iterator entry_it = to_nfa.stateTable_.cbegin();
+             entry_it != to_nfa.stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
             State::transition_set_type transitions = s.transition_set();
@@ -228,8 +369,8 @@ namespace Automata {
 
         // Copy states of this automata
         State *init_state_other = to_nfa.initialState();
-        for (state_table_type::const_iterator entry_it = this->state_table_.cbegin();
-             entry_it != this->state_table_.cend(); entry_it++)
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
             result.addState("1_" + s.name(), false);
@@ -239,8 +380,8 @@ namespace Automata {
         }
 
         // Add the transitions
-        for (state_table_type::const_iterator entry_it = this->state_table_.cbegin();
-             entry_it != this->state_table_.cend(); entry_it++)
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
             State::transition_set_type transitions = s.transition_set();
@@ -258,76 +399,60 @@ namespace Automata {
         return result;
     }
 
-    NFA::state_set_type &NFA::end_states() {
-        return end_states_;
-    }
+    NFA NFA::kleene() const {
+        std::string start = "3_0";
+        std::string end = "3_1";
 
-    const NFA::state_set_type &NFA::end_states() const {
-        return end_states_;
-    }
+        // Declaration of automata
+        NFA result(start, // initial state with name start
+                   this->stateTable_.bucket_count()); // maximum size to reduce load factor of hashtable
+        result.addState(end, true); // add end state
 
-    NFA &NFA::operator=(const NFA &rhs) {
-
-        // Overwriting of automata
-        S_ = rhs.S_;
-        state_table_ = state_table_type( rhs.table().bucket_count() );
-        end_states_ = state_set_type( rhs.end_states().bucket_count() );
-
-        // Copy states of other automata
-        for (state_table_type::const_iterator entry_it = rhs.state_table_.cbegin();
-             entry_it != rhs.state_table_.cend(); entry_it++)
+        // Copy states of this automata
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
-            this->addState(s.name(), s.isEnd());
+            result.addState("1_" + s.name(), false);
         }
 
-        start_state_ = getState(rhs.initialState()->name());
-
-
         // Add the transitions
-        for (state_table_type::const_iterator entry_it = rhs.state_table_.cbegin();
-             entry_it != rhs.state_table_.cend(); entry_it++)
+        for (state_table_type::const_iterator entry_it = this->stateTable_.cbegin();
+             entry_it != this->stateTable_.cend(); entry_it++)
         {
             State s = entry_it->second;
             State::transition_set_type transitions = s.transition_set();
             for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
             {
                 Transition t = *t_it;
-                this->addTransition(t.source()->name(), t.destination()->name(), t.symbol());
+                result.addTransition("1_" + t.source()->name(), "1_" + t.destination()->name(), t.symbol());
             }
-        }
-        return *this;
-    }
 
-    NFA::NFA(const NFA &nfa)
-            : state_table_( state_table_type( nfa.table().bucket_count() ) ),
-              end_states_( state_set_type( nfa.end_states().bucket_count() ) ),
-              S_( nfa.S_ )
-    {
-        // Copy states of other automata
-        for (state_table_type::const_iterator entry_it = nfa.state_table_.cbegin();
-             entry_it != nfa.state_table_.cend(); entry_it++)
-        {
-            State s = entry_it->second;
-            this->addState(s.name(), s.isEnd());
-        }
-
-        start_state_ = getState(nfa.initialState()->name());
-
-
-        // Add the transitions
-        for (state_table_type::const_iterator entry_it = nfa.state_table_.cbegin();
-             entry_it != nfa.state_table_.cend(); entry_it++)
-        {
-            State s = entry_it->second;
-            State::transition_set_type transitions = s.transition_set();
-            for (State::transition_set_type::iterator t_it = transitions.begin(); t_it != transitions.end(); t_it++)
+            if (s.isEnd())
             {
-                Transition t = *t_it;
-                this->addTransition(t.source()->name(), t.destination()->name(), t.symbol());
+                // connect end states with the initial state of this automata
+                result.addTransition("1_" + s.name(), "1_" + this->initialState()->name(), epsilon);
+
+                // connect end state to the result's end state
+                result.addTransition("1_" + s.name(), end, epsilon);
             }
+
         }
+
+        // Connect start to initial state of this
+        State *this_init_state = this->initialState();
+        result.addTransition(result.initialState()->name(), "1_" + this_init_state->name(), epsilon);
+
+        // Connect start to end state
+        result.addTransition(start, end, epsilon);
+
+        return result;
     }
+
+    NFA NFA::kleene_plus() const {
+        return this->concatenate(this->kleene());
+    }
+
 }
 
 

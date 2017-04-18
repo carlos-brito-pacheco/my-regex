@@ -96,6 +96,24 @@ namespace Automata {
         }
     };
 
+    class EmptyStateSetError : public std::exception {
+        std::string message_;
+
+    public:
+        EmptyStateSetError() {
+            message_ =  "Automata has an empty set of states.";
+        }
+
+        ~EmptyStateSetError() throw() {
+
+        }
+
+        virtual const char *what() const throw() {
+
+            return message_.c_str();
+        }
+    };
+
 }
 
 

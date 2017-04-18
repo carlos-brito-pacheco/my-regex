@@ -180,6 +180,12 @@ namespace Automata {
          */
         NFA concatenate(NFA const &to_nfa) const;
 
+        NFA alternate(NFA const& to_nfa) const;
+
+        NFA kleene() const;
+
+        NFA kleene_plus() const;
+
         /// Sets the string to parse
         /**
          * This method sets the string to parse. We can then use advance() to advance
@@ -313,6 +319,10 @@ namespace Automata {
         /// Copies the NFA to another
         NFA& operator=(const NFA& rhs);
 
+        /// Sets the initial state of the automata
+        void setInitialState(std::string name);
+
+
         /// We take the convention that the escape character '\x08' represents epsilon
         static const char epsilon = '\x08';
 
@@ -320,13 +330,13 @@ namespace Automata {
         const std::string id_string_;
 
         /// Table of states
-        state_table_type state_table_;
+        state_table_type stateTable_;
 
         /// Set of end states
-        state_set_type end_states_;
+        state_set_type endStates_;
 
         /// Pointer to start state
-        State *start_state_;
+        State *startState_;
 
         /// String to match
         std::string str_to_match;
