@@ -7,7 +7,7 @@ One will find that the code has been abstracted in such a way that it will be ea
 Albeit, there is still much to do.
 
 # Basic usage
-````
+````cpp
 #include <iostream>
 #include "src/Regex/Regex.h"
 
