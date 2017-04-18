@@ -37,10 +37,6 @@
  * concatenation and union to two automatas. Because we lose the ability to reference states solely on the name, this
  * should make sense.
  *
- * - Implement method for the union of two automatas
- * - Implement method for kleene star
- * - Implement method for positive kleen star
- *
  */
 //</editor-fold>
 
@@ -157,9 +153,32 @@ namespace Automata {
          * This means that if we have two states with equal names in both \f$ A \f$ and \f$ B \f$,
          * this will generate a collision and throw an exception.
          *
-         * # Notes
-         * If you didn't read the previous section then please note the following:
-         * The concatenation of two NFAs with two states with identical names will generate an exception.
+         * # Complexity
+         * Worst case \f$ O(n^2 + m^2) \f$
+         * Where:
+         * - \f$ n \f$ is the number of states in \f$ A \f$
+         * - \f$ m \f$ is the number of states in \f$ B \f$
+         *
+         * ## Notes on the complexity
+         * The complexity is actually really bad because we're reconstructing the whole "graph".
+         * This means we first have to add the states which takes \f$ O(n) \f$.
+         * Then we have to add all transitions. In the worst case scenario we have at most
+         * \f$ kn^2 \f$ arrows coming out of each state. However, \f$ k \f$ is a constant which
+         * represents the number of symbols in the alphabet. Therefore, we have to do \f$ O(n^2) \f$
+         * operations for each graph.
+         *
+         * @param to_nfa Right side automata. (AKA. automata B)
+         * @return The concatenation of two NFAs
+         */
+        NFA concatenate(NFA const &to_nfa) const;
+
+        /// Alternates two automatas
+        /**
+         * This method returns an automata that is the alternation of both given automatas.
+         *
+         * Formally, if \f$ A \f$ and \f$ B \f$ are two NFAs which have respective languages
+         * \f$ L(A) \f$ and \f$L(B)\f$ then this method returns a NFA \f$ C = A | B \f$ which accepts
+         * the language \f$ L(A) U L(B) \f$.
          *
          * # Complexity
          * Worst case \f$ O(n^2 + m^2) \f$
@@ -175,16 +194,76 @@ namespace Automata {
          * represents the number of symbols in the alphabet. Therefore, we have to do \f$ O(n^2) \f$
          * operations for each graph.
          *
-         * @param to_nfa Right side automata. (Aka. the automata B)
-         * @return The concatenation of two NFAs
+         * @param to_nfa Right side automata. (AKA. automata B)
+         * @return The alternation of two NFAs
          */
-        NFA concatenate(NFA const &to_nfa) const;
-
         NFA alternate(NFA const& to_nfa) const;
 
+        /// Calculates the kleene closure of the automata
+        /**
+         * This method returns an automata which is the kleene closure of the automata itself.
+         *
+         * Formally, if \f$ A \f$ is an automata with language \f$ L(A) \f$, this method returns an automata
+         * \f$ V \f$ with language \f$ L(V) = (L(A))* \f$.
+         *
+         * # Complexity
+         * Worst case \f$ O(n^2) \f$
+         * Where:
+         * - \f$ n \f$ is the number of states in \f$ A \f$
+         *
+         * ## Notes on the complexity
+         * The complexity is actually really bad because we're reconstructing the whole "graph".
+         * This means we first have to add the states which takes \f$ O(n) \f$.
+         * Then we have to add all transitions. In the worst case scenario we have at most
+         * \f$ kn^2 \f$ arrows coming out of each state. However, \f$ k \f$ is a constant which
+         * represents the number of symbols in the alphabet. Therefore, we have to do \f$ O(n^2) \f$
+         * operations for each graph.
+         *
+         * # References
+         * - For more reference and a simple explanation you can consult wikipedias page on the subject at
+         * https://en.wikipedia.org/wiki/Kleene_star
+         *
+         * @return Kleene star of automata
+         */
         NFA kleene() const;
 
+        /// Returns the kleene plus closure of the automata
+        /**
+        * This method returns an automata which is the kleene closure of the automata itself.
+        *
+        * Formally, if \f$ A \f$ is an automata with language \f$ L(A) \f$, this method returns an automata
+        * \f$ V \f$ with language \f$ L(V) = (L(A))+ \f$.
+        *
+        * # Complexity
+        * Worst case \f$ O(n^2) \f$
+        * Where:
+        * - \f$ n \f$ is the number of states in \f$ A \f$
+        *
+        * ## Notes on the complexity
+        * The complexity is actually really bad because we're reconstructing the whole "graph".
+        * This means we first have to add the states which takes \f$ O(n) \f$.
+        * Then we have to add all transitions. In the worst case scenario we have at most
+        * \f$ kn^2 \f$ arrows coming out of each state. However, \f$ k \f$ is a constant which
+        * represents the number of symbols in the alphabet. Therefore, we have to do \f$ O(n^2) \f$
+        * operations for each graph.
+        *
+        * # References
+        * - For more reference and a simple explanation you can consult wikipedias page on the subject at
+        * https://en.wikipedia.org/wiki/Kleene_star
+        *
+        * @return Kleene plus of automata
+        *
+        * */
         NFA kleene_plus() const;
+
+        /// Returns an automata with an accepting language as optional
+        /**
+         * Formally, if \f$ A \f$ is an automata with language \f$ L = L(A) \f$ then this method returns
+         * an automata with an accepting language of \f$ L U \{ \epsilon \} \f$
+         *
+         * @return Automata accepting either empty state or the language of the automata
+         */
+        NFA optional() const;
 
         /// Sets the string to parse
         /**

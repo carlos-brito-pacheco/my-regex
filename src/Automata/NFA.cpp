@@ -453,6 +453,14 @@ namespace Automata {
         return this->concatenate(this->kleene());
     }
 
+    NFA NFA::optional() const {
+
+        NFA empty("0");
+        empty.addState("1");
+        empty.addTransition("0", "1", epsilon);
+
+        return this->alternate(empty);
+    }
 }
 
 
