@@ -19,16 +19,14 @@
 
 //<editor-fold desc="Description">
 /**
- * @file
+ * @file Regexp.cpp
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 4/18/17.
  * 
- * @brief
+ * @brief Implementation file for the class Regex
  *
  * # Description
- * 
- * # TODO
- * 
+ * It contains the implementations.
  *
  */
 //</editor-fold>

@@ -19,16 +19,9 @@
 
 //<editor-fold desc="Description">
 /**
- * @file
+ * @file Regex.h
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 4/18/17.
- * 
- * @brief
- *
- * # Description
- * 
- * # TODO
- * 
  *
  */
 //</editor-fold>
@@ -42,16 +35,17 @@
 namespace Regex {
 
     /**
-     * @class
+     * @class Regex
      * @author Carlos Brito (carlos.brito524@gmail.com)
      * @date 4/18/17.
      *
-     * @brief
+     * @brief Regular expression engine clcass
      *
      * # Description
+     * It parses regular expressions.
      *
      * # TODO
-     *
+     * Many many things.
      *
      */
     class Regex {
