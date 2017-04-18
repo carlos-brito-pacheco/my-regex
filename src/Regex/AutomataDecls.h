@@ -187,6 +187,7 @@ const Automata::NFA ASCII_NFA = getAsciiNFA(33, 126);
 /// Accepts whitespace
 const Automata::NFA SPACE_NFA = getWhiteSpaceNFA();
 
+/// Accepts the Kleene Plus operator
 const Automata::NFA KLEENE_PLUS_NFA = getKleenePlusNFA();
 
 

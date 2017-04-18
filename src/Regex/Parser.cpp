@@ -23,53 +23,11 @@
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 4/13/17.
  *
- * @brief F
+ * @brief File containing the implementation of the class Parser
  *
- * # Description
- *
- * Grammar for regex:
- * ````
- *  regex = exp $
- *  exp      = term '|' exp
- *           | term
- *
- *  term     = factor term
- *           | factor
- *
- *  factor   = primary '*'
- *           | primary '+'
- *           | primary '?'
- *           | primary
- *
- *  primary  = '(' exp ')'
- *           | char
- *
- * ````
- * Left factored grammar:
- * ````
- * E = T E'
- *
- * ' = '|' E       { alternation }
- *      | epsilon
- *
- * T = F T'
- *
- * T' = T           { concatenation }
- *      | epsilon
- *
- * F = P F'
- *
- * F' = '*'         { kleene }
- *      | '+'       { positive kleene }
- *      | '?'       { optional }
- *      | epsilon   { nothing }
- *
- * P = '(' E ')'
- *      | char
- *
- * ````
  * # TODO
  *
+ * - Add the prediction table to the doc
  */
 //</editor-fold>
 #include <iostream>

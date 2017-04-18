@@ -18,19 +18,18 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file NFA.h
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 3/22/17.
  *
- * Description:
+ * @brief Header file which contains the errors associated with the construction of automatas
  *
- * TODO:
- * 
- * 
- * 
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * # Description
+ *
+ * This file contains various classes which are exceptions that will be thrown when an error
+ * occurs during the construction of NFAs.
+ *
  */
 //</editor-fold>
 
