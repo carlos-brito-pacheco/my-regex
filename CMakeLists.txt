@@ -5,9 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(SOURCE_FILES
         main.cpp
-        src/Regex/Regex.cpp src/Regex/Regex.h
         src/Automata/NFA.cpp src/Automata/NFA.h
-        src/Regex/ParserErrors.h
+        src/Regex/RegexErrors.h
         src/Hashtable/Hashtable.h
         src/Hashtable/PearsonHashtable8.h
         src/Regex/Token.h
@@ -17,5 +16,5 @@ set(SOURCE_FILES
         src/Automata/Transition.h
         src/Set/Set.h
         src/Automata/AutomataErrors.h
-        src/Automata/Transition.cpp src/Regex/AutomataDecls.h src/Regex/Parser.cpp src/Regex/Parser.h)
+        src/Automata/Transition.cpp src/Regex/AutomataDecls.h src/Regex/Parser.cpp src/Regex/Parser.h src/Regex/Regex.cpp src/Regex/Regex.h)
 add_executable(MyRegex ${SOURCE_FILES})

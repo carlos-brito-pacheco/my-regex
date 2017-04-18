@@ -30,6 +30,20 @@ namespace Regex {
         }
     };
 
+    class InvalidRegexError : public std::exception {
+    public:
+
+        InvalidRegexError()
+        {}
+
+        ~InvalidRegexError() throw()
+        {}
+
+        virtual const char* what() const throw()
+        {
+            return std::string("Invalid regex detected! Aborting compilation of automata." ).c_str();
+        }
+    };
 
     class RegexpMismatchedParentheses : public std::exception {
 

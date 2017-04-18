@@ -6,6 +6,26 @@ emulating the automata.
 One will find that the code has been abstracted in such a way that it will be easy to understand.
 Albeit, there is still much to do.
 
+# Basic usage
+````
+#include <iostream>
+#include "src/Regex/Regex.h"
+
+using namespace std;
+
+int main() {
+
+    Regex::Regex regex("aaa(a|b)+c*");
+    cout << "Match? " << regex.match("aaabbababacc") << endl;
+
+    return 0;
+}
+````
+
+Output:
+
+`~ $ Match? 1`
+
 # How-to use
 Please see the Examples/ directory for examples on how to use the code. Each subfolder will have an explanation.
 

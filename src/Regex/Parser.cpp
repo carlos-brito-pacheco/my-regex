@@ -33,7 +33,7 @@
 #include <iostream>
 #include "Parser.h"
 #include "TokenDecls.h"
-#include "ParserErrors.h"
+#include "RegexErrors.h"
 
 
 namespace Regex {
@@ -60,13 +60,12 @@ namespace Regex {
         do
         {
             lookahead_ = lexer_.nextToken();
-        } while (lookahead_.tag() == TAG_SPACE);
-        std::cout << lookahead_ << std::endl;
+        } while (lookahead_.tag() == TAG_SPACE); // ignore whitespace
+
         tokenList_.push_back(lookahead_);
     }
 
     void Parser::E() {
-        std::cout << "E" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
@@ -78,14 +77,12 @@ namespace Regex {
     }
 
     void Parser::E_p() {
-        std::cout << "E_p" << std::endl;
         if (lookahead_.tag() == TAG_ALTER)
         {
             consume();
             E();
 
             // ***** Handle alternation ******** //
-            std::cout << "HANDLE ALT" << std::endl;
             Automata::NFA nfa_1 = automataStack_.top();
             automataStack_.pop();
 
@@ -107,7 +104,6 @@ namespace Regex {
     }
 
     void Parser::T() {
-        std::cout << "T" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
@@ -118,14 +114,12 @@ namespace Regex {
     }
 
     void Parser::T_p() {
-        std::cout << "T_p" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
             T();
 
             // ***** Handle concatenation ******** //
-            std::cout << "HANDLE CONCAT" << std::endl;
             Automata::NFA nfa_1 = automataStack_.top();
             automataStack_.pop();
 
@@ -147,7 +141,6 @@ namespace Regex {
     }
 
     void Parser::F() {
-        std::cout << "F" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN || lookahead_.tag() == TAG_CHAR)
         {
             P();
@@ -157,11 +150,9 @@ namespace Regex {
     }
 
     void Parser::F_p() {
-        std::cout << "F_p" << std::endl;
         if (lookahead_.tag() == TAG_KLEENE_STAR)
         {
             // ***** Handle kleene ******** //
-            std::cout << "HANDLE KLEEENE" << std::endl;
             Automata::NFA nfa = automataStack_.top();
             automataStack_.pop();
 
@@ -175,7 +166,7 @@ namespace Regex {
         else if (lookahead_.tag() == TAG_QMARK)
         {
             // ***** Handle optional ******** //
-            std::cout << "HANDLE OPT" << std::endl;
+//            std::cout << "HANDLE OPT" << std::endl;
             Automata::NFA nfa = automataStack_.top();
             automataStack_.pop();
 
@@ -188,7 +179,6 @@ namespace Regex {
         else if (lookahead_.tag() == TAG_PLUS)
         {
             // ***** Handle kleene plus ******** //
-            std::cout << "HANDLE KLEENE PLUS" << std::endl;
             Automata::NFA nfa = automataStack_.top();
             automataStack_.pop();
 
@@ -211,7 +201,6 @@ namespace Regex {
     }
 
     void Parser::P() {
-        std::cout << "P" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN)
         {
             consume(); // consume l paren
@@ -220,7 +209,6 @@ namespace Regex {
         } else if (lookahead_.tag() == TAG_CHAR)
         {
             // Create NFA and push to stack
-            std::cout << "HANDLE CHAR" << std::endl;
             Automata::NFA nfa("0");
             nfa.addState("1", true);
 

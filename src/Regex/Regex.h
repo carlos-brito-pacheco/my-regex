@@ -1,7 +1,7 @@
-//<editor-fold desc="License">
+//<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/22/17 Carlos Brito
+ *  Copyright (C) 4/18/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,49 +18,57 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 4/18/17.
+ * 
+ * @brief
  *
- * Description:
- * This is the header file of the class Regexp.
- * This contains all the definitions of its functions
- * and provides insight to its behaviour.
+ * # Description
+ * 
+ * # TODO
+ * 
  *
- * TODO:
- * - Add support for testing equivalence between regexp
- * (this problem is known to be PSPACE-complete so it isn't trivial to implement)
- *
- * -
- *
- *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
-
-#ifndef MYREGEX_REGEXP_H
-#define MYREGEX_REGEXP_H
+#ifndef MYREGEX_REGEX_H
+#define MYREGEX_REGEX_H
 
 #include <string>
-#include <set>
-#include "../Hashtable/Hashtable.h"
-#include "Operator.h"
+#include "../Automata/NFA.h"
+#include "Parser.h"
 
-using namespace std;
+namespace Regex {
 
-class Regexp {
-    string regexp_;
+    /**
+     * @class
+     * @author Carlos Brito (carlos.brito524@gmail.com)
+     * @date 4/18/17.
+     *
+     * @brief
+     *
+     * # Description
+     *
+     * # TODO
+     *
+     *
+     */
+    class Regex {
+        std::string pattern_;
+        Automata::NFA nfa_;
+        Parser parser;
 
-public:
-    Regexp(string regexp);
-    bool match(std::string str);
+    public:
+        Regex();
+        Regex(std::string pattern);
+        void setPattern(std::string pattern);
+        bool match(std::string str);
 
-private:
-    bool isoperator(char op);
+    private:
+        void compile();
 
-    friend ostream& operator<<(ostream& os, Regexp const& regexp);
-};
+    };
+}
 
-
-#endif //MYREGEX_REGEXP_H
+#endif //MYREGEX_REGEX_H

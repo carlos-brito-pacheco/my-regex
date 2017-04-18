@@ -1,7 +1,7 @@
-//<editor-fold desc="License">
+//<editor-fold desc="Preamble">
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  Copyright (C) 3/22/17 Carlos Brito
+ *  Copyright (C) 4/18/17 Carlos Brito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,29 +18,62 @@
 //</editor-fold>
 
 //<editor-fold desc="Description">
-/*
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Author: Carlos Brito (carlos.brito524@gmail.com)
- * Date: 3/22/17.
+/**
+ * @file
+ * @author Carlos Brito (carlos.brito524@gmail.com)
+ * @date 4/18/17.
+ * 
+ * @brief
  *
- * Description:
- * This is the implementation of the class Regexp.
+ * # Description
+ * 
+ * # TODO
+ * 
  *
- * TODO:
- * - Handle tokens as something else than chars
- *
- * - Instead of using the Shunting-Yard algorithm,
- * we should probably use a parser and determine if
- * the regular expression is syntactically valid and
- * convert to postfix during parsing
- *
- *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 //</editor-fold>
-
+#include <iostream>
+#include "Regex.h"
+#include "RegexErrors.h"
 
 namespace Regex {
 
+    Regex::Regex(std::string pattern) {
+        pattern_ = pattern;
 
+        try
+        {
+            compile();
+        } catch (InvalidRegexError e)
+        {
+            std::cout << "Invalid regular expression with pattern: " + pattern;
+            throw e;
+        }
+
+    }
+
+    void Regex::compile() {
+        try
+        {
+            parser.parse(pattern_);
+        } catch (ParserError e)
+        {
+            throw InvalidRegexError();
+        }
+
+        nfa_ = parser.getBuiltNFA();
+    }
+
+    bool Regex::match(std::string str) {
+        return nfa_.match(str);
+    }
+
+    Regex::Regex() {
+        pattern_ = "";
+    }
+
+    void Regex::setPattern(std::string pattern) {
+        pattern_ = pattern;
+        compile();
+    }
 }
