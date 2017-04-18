@@ -106,6 +106,19 @@ Automata::NFA getRParenNFA() {
 }
 
 /**
+ * @brief Get an automata which parses a right parentheses
+ * @return NFA parsing right parentheses
+ */
+Automata::NFA getKleenePlusNFA() {
+    Automata::NFA kleene_plus("0");
+    kleene_plus.addState("1", true);
+
+    kleene_plus.addTransition("0", "1", '+');
+
+    return kleene_plus;
+}
+
+/**
  * @brief Get an automata which parses an alphanumeric character
  * @return NFA parsing an alphanumeric character
  */
@@ -173,6 +186,8 @@ const Automata::NFA ASCII_NFA = getAsciiNFA(33, 126);
 
 /// Accepts whitespace
 const Automata::NFA SPACE_NFA = getWhiteSpaceNFA();
+
+const Automata::NFA KLEENE_PLUS_NFA = getKleenePlusNFA();
 
 
 

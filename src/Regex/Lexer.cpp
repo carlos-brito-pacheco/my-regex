@@ -124,6 +124,7 @@ namespace Regex {
         match_list.push_back( std::make_pair( LPAREN_NFA, TAG_LPAREN ) );
         match_list.push_back( std::make_pair( RPAREN_NFA, TAG_RPAREN ) );
         match_list.push_back( std::make_pair( QMARK_NFA, TAG_QMARK ) );
+        match_list.push_back( std::make_pair( KLEENE_PLUS_NFA, TAG_PLUS ) );
         match_list.push_back( std::make_pair( ASCII_NFA, TAG_CHAR ) );
     }
 

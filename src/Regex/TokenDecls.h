@@ -60,6 +60,7 @@ enum {
     TOK_ALTER,
     TOK_CONCAT,
     TOK_QMARK,
+    TOK_PLUS,
 
     TOK_CHAR,
     TOK_SPACE,
@@ -84,6 +85,9 @@ enum {
 
     /// Tag for Question mark symbol. Also known as, the optional operator.
     static const Regex::Token::Tag TAG_QMARK(TOK_QMARK, "question mark");
+
+    /// Tag for the positive Kleene Operator.
+    static const Regex::Token::Tag TAG_PLUS(TOK_PLUS, "kleene plus");
 
     /// Tag for an escape sequence.
     static const Regex::Token::Tag TAG_ESCAPE_SEQUENCE(TOK_ESCAPE_SEQUENCE, "escape sequence");
