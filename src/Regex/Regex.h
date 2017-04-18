@@ -45,19 +45,17 @@
 #include <string>
 #include <set>
 #include "../Hashtable/Hashtable.h"
-#include "RegexpOperator.h"
+#include "Operator.h"
 
 using namespace std;
 
 class Regexp {
-    static Hashtable<string> *operator_set_;
     string regexp_;
-    string postfix_;
 
 public:
     Regexp(string regexp);
-    string toPostfix();
-    string regexp();
+    bool match(std::string str);
+
 private:
     bool isoperator(char op);
 
