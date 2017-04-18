@@ -19,14 +19,14 @@
 
 //<editor-fold desc="Description">
 /**
- * @file
+ * @file Parser.cpp
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 4/13/17.
- * 
- * @brief
+ *
+ * @brief F
  *
  * # Description
-' *
+ *
  * Grammar for regex:
  * ````
  *  regex = exp $
@@ -44,16 +44,17 @@
  *  primary  = '(' exp ')'
  *           | char
  *
- *
+ * ````
  * Left factored grammar:
+ * ````
  * E = T E'
  *
- * E' = '|' E
+ * ' = '|' E       { alternation }
  *      | epsilon
  *
- * T = F T'         { concatenation }
+ * T = F T'
  *
- * T' = T
+ * T' = T           { concatenation }
  *      | epsilon
  *
  * F = P F'
@@ -68,7 +69,7 @@
  *
  * ````
  * # TODO
- * 
+ *
  */
 //</editor-fold>
 #include <iostream>
@@ -76,7 +77,6 @@
 #include "TokenDecls.h"
 #include "ParserErrors.h"
 
-using namespace std;
 
 namespace Regex {
     Parser::Parser() {
@@ -90,28 +90,25 @@ namespace Regex {
         lexer_.setSource(regex);
         consume();
 
-        try {
-            E();
-        } catch (ParserError e)
-        {
-            return false;
-        }
+        E();
 
         return true;
     }
 
 
     void Parser::consume() {
+        if (lookahead_.tag() == TAG_EOF)
+            throw ParserError();
         do
         {
             lookahead_ = lexer_.nextToken();
         } while (lookahead_.tag() == TAG_SPACE);
-
-        cout << lookahead_ << endl;
+        std::cout << lookahead_ << std::endl;
+        tokenList_.push_back(lookahead_);
     }
 
     void Parser::E() {
-        cout << "E" << endl;
+        std::cout << "E" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
@@ -123,12 +120,25 @@ namespace Regex {
     }
 
     void Parser::E_p() {
-        cout << "E_p" << endl;
+        std::cout << "E_p" << std::endl;
         if (lookahead_.tag() == TAG_ALTER)
         {
-            // push alt
             consume();
             E();
+
+            // ***** Handle alternation ******** //
+            std::cout << "HANDLE ALT" << std::endl;
+            Automata::NFA nfa_1 = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA nfa_2 = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA alt = nfa_1.alternate(nfa_2);
+
+            automataStack_.push(alt);
+            // ********************************* //
+
         }
         else if (lookahead_.tag() == TAG_EOF ||
                 lookahead_.tag() == TAG_RPAREN)
@@ -139,7 +149,7 @@ namespace Regex {
     }
 
     void Parser::T() {
-        cout << "T" << endl;
+        std::cout << "T" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
@@ -150,11 +160,24 @@ namespace Regex {
     }
 
     void Parser::T_p() {
-        cout << "T_p" << endl;
+        std::cout << "T_p" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN ||
             lookahead_.tag() == TAG_CHAR)
         {
             T();
+
+            // ***** Handle concatenation ******** //
+            std::cout << "HANDLE CONCAT" << std::endl;
+            Automata::NFA nfa_1 = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA nfa_2 = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA concat = nfa_2.concatenate(nfa_1);
+
+            automataStack_.push(concat);
+            // ********************************* //
         }
         else if(lookahead_.tag() == TAG_ALTER ||
                 lookahead_.tag() == TAG_EOF ||
@@ -166,7 +189,7 @@ namespace Regex {
     }
 
     void Parser::F() {
-        cout << "F" << endl;
+        std::cout << "F" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN || lookahead_.tag() == TAG_CHAR)
         {
             P();
@@ -176,21 +199,48 @@ namespace Regex {
     }
 
     void Parser::F_p() {
-        cout << "F_p" << endl;
+        std::cout << "F_p" << std::endl;
         if (lookahead_.tag() == TAG_KLEENE_STAR)
         {
-            //push kleene
+            // ***** Handle kleene ******** //
+            std::cout << "HANDLE KLEEENE" << std::endl;
+            Automata::NFA nfa = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA kleene = nfa.kleene();
+
+            automataStack_.push(kleene);
+            // ********************************* //
+
             consume();
         }
         else if (lookahead_.tag() == TAG_QMARK)
         {
-            // push q mark
+            // ***** Handle optional ******** //
+            std::cout << "HANDLE OPT" << std::endl;
+            Automata::NFA nfa = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA optional = nfa.optional();
+
+            automataStack_.push(optional);
+            // ********************************* //
             consume();
         }
-//        else if (lookahead_.tag() == TAG_PLUS)
-//        {
-//            push plus
-//        }
+        else if (lookahead_.tag() == TAG_PLUS)
+        {
+            // ***** Handle kleene plus ******** //
+            std::cout << "HANDLE KLEENE PLUS" << std::endl;
+            Automata::NFA nfa = automataStack_.top();
+            automataStack_.pop();
+
+            Automata::NFA kleene_plus = nfa.kleene_plus();
+
+            automataStack_.push(kleene_plus);
+            // ********************************* //
+
+            consume();
+        }
         else if (lookahead_.tag() == TAG_LPAREN ||
                 lookahead_.tag() == TAG_CHAR ||
                 lookahead_.tag() == TAG_ALTER ||
@@ -203,20 +253,36 @@ namespace Regex {
     }
 
     void Parser::P() {
-        cout << "P" << endl;
+        std::cout << "P" << std::endl;
         if (lookahead_.tag() == TAG_LPAREN)
         {
-            // push lparen
-            consume();
+            consume(); // consume l paren
             E();
-            consume();
-            // push rparen
+            consume(); // consume r paren
         } else if (lookahead_.tag() == TAG_CHAR)
         {
-            // push char
+            // Create NFA and push to stack
+            std::cout << "HANDLE CHAR" << std::endl;
+            Automata::NFA nfa("0");
+            nfa.addState("1", true);
+
+            char symbol = lookahead_.lexeme()[0]; // we access the only element
+
+            nfa.addTransition("0", "1", symbol);
+
+            automataStack_.push(nfa);
+
             consume();
         }
         else throw ParserError();
+    }
+
+    std::vector<Token> Parser::tokenList() {
+        return tokenList_;
+    }
+
+    Automata::NFA Parser::getBuiltNFA() {
+        return automataStack_.top();
     }
 }
 

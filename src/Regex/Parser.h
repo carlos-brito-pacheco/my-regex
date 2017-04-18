@@ -19,11 +19,11 @@
 
 //<editor-fold desc="Description">
 /**
- * @file
+ * @file Parser.h
  * @author Carlos Brito (carlos.brito524@gmail.com)
  * @date 4/13/17.
  * 
- * @brief
+ * @brief dasads
  *
  * # Description
  * 
@@ -37,6 +37,8 @@
 
 #include <string>
 #include <vector>
+#include <stack>
+#include <queue>
 #include "Lexer.h"
 
 namespace Regex {
@@ -57,21 +59,26 @@ namespace Regex {
     class Parser {
 
         typedef typename std::vector<Token> token_list;
+        typedef typename std::stack <Automata::NFA > automata_stack;
 
         Lexer lexer_;
         Token lookahead_;
         Automata::NFA nfa_;
+        token_list tokenList_;
+        automata_stack automataStack_;
 
     public:
         Parser();
-
         ~Parser();
 
         bool parse(std::string regex);
-        void consume();
-        void getBuiltNFA();
+
+        token_list tokenList();
+
+        Automata::NFA getBuiltNFA();
 
     private:
+        void consume();
         void E();
         void E_p();
         void T();
