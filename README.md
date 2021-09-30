@@ -3,9 +3,6 @@ This is a Regex engine that matches a string like `abbccccaa` to a pattern like 
 It does this by building a Non-Deterministic Finite Automata  out of the given regular expression and recursively
 emulating the automata.
 
-One will find that the code has been abstracted in such a way that it will be easy to understand.
-Albeit, there is still much to do. In particular, I have to profile the code.
-
 # Basic usage
 ````cpp
 #include <iostream>
